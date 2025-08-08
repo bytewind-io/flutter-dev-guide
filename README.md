@@ -1,11 +1,12 @@
 Документация по работе с дата-классами
 
-1. Строгий конструктор
-	•	Все поля делаем required, даже если они могут быть null.
-	•	Это заставляет явно указывать null при создании объекта.
+1. Строгий конструктор:
+-	Все поля делаем required, даже если они могут быть null.
+-	Это заставляет явно указывать null при создании объекта.
 
 Пример:
 
+```
 class User {
   const User({
     required this.id,
@@ -17,11 +18,13 @@ class User {
   final String name;
   final int? age;
 }
+```
 
-Также при создании таких классов (с null полями) рекомендуется использовать factory
+Также при создании таких классов (с null полями) рекомендуется использовать **factory**
 
 Пример:
 
+```
 class User {
   const User({
     required this.id,
@@ -41,16 +44,18 @@ factory User.create({required String name, required int age}){
   final String name;
   final int? age;
 }
+```
 
-⸻
+------------
 
 2. Enum вместо «магических» чисел
-	•	Все поля вроде filterType, type при fromJson преобразуем в enum.
-	•	Enum содержит все возможные значения.
-	•	В enum обязательно есть static fromValue, который возвращает null, если нет совпадения.
+- Все поля вроде filterType, type при fromJson преобразуем в enum.
+- Enum содержит все возможные значения.
+- В enum должен быть static метод fromValue, который возвращает null, если нет совпадения.
 
 Пример enum с nullable результатом:
 
+```
 import 'package:collection/collection.dart';
 
 enum FilterType {
@@ -65,17 +70,19 @@ enum FilterType {
     return FilterType.values.firstWhereOrNull((e) => e.value == raw);
   }
 }
+```
 
-⸻
+------------
 
 3. Если fromValue вернул null
 
 Есть два подхода:
-	1.	Оставить null — рекомендуемый вариант.
-	2.	Добавить в enum значение unknown и возвращать его.
+1. Оставить null — рекомендуемый вариант.
+2. Добавить в enum значение unknown и возвращать его.
 
 Пример с unknown:
 
+```
 enum ItemType {
   basic(0),
   premium(1),
@@ -90,12 +97,13 @@ enum ItemType {
     ) ?? ItemType.unknown;
   }
 }
+```
 
-
-⸻
+------------
 
 4. Пример fromJson / toJson
 
+```
 class BasePaginationRequest {
   const BasePaginationRequest({
     required this.offset,
@@ -117,15 +125,16 @@ class BasePaginationRequest {
         'FilterType': filterType?.value,
       };
 }
+```
 
-----
+------------
 
 5. Модель должна наслкдоваться от Equatable
 
-----
 
 Пример модели:
 
+```
 class TaskModel extends Equatable {
   const TaskModel({
     required this.id,
@@ -151,3 +160,4 @@ class TaskModel extends Equatable {
   @override
   List<Object?> get props => [id, name, description, filterType];
 }
+```
