@@ -1,0 +1,89 @@
+[
+  {
+    "id": "DART-DATA-REQ-CTOR",
+    "title": "Строгий конструктор: required для всех полей (включая nullable)",
+    "category": "dart/data-class",
+    "severity": "error",
+    "tags": [
+      "constructor",
+      "required",
+      "null-safety"
+    ],
+    "linter_rule": null,
+    "coverage": "ai",
+    "bad_snippet": "docs/examples/bad/bad-strict-ctor-001.dart",
+    "good_snippet": "docs/examples/good/good-strict-ctor-001.dart"
+  },
+  {
+    "id": "DART-DATA-FACTORY",
+    "title": "Используй factory для сценариев с отсутствующими/генерируемыми полями",
+    "category": "dart/data-class",
+    "severity": "warning",
+    "tags": [
+      "factory",
+      "constructor"
+    ],
+    "linter_rule": null,
+    "coverage": "ai",
+    "bad_snippet": "docs/examples/bad/bad-factory-001.dart",
+    "good_snippet": "docs/examples/good/good-factory-001.dart"
+  },
+  {
+    "id": "DART-DATA-ENUM",
+    "title": "Enum вместо магических чисел + безопасный fromValue",
+    "category": "dart/enums",
+    "severity": "error",
+    "tags": [
+      "enum",
+      "parsing",
+      "json"
+    ],
+    "linter_rule": null,
+    "coverage": "ai",
+    "bad_snippet": "docs/examples/bad/bad-enum-parse-001.dart",
+    "good_snippet": "docs/examples/good/good-enum-parse-001.dart"
+  },
+  {
+    "id": "DART-DATA-ENUM-UNKNOWN",
+    "title": "Неизвестные значения enum: предпочитай null; допускается ItemType.unknown",
+    "category": "dart/enums",
+    "severity": "warning",
+    "tags": [
+      "enum",
+      "robustness"
+    ],
+    "linter_rule": null,
+    "coverage": "ai",
+    "bad_snippet": "docs/examples/bad/bad-enum-unknown-001.dart",
+    "good_snippet": "docs/examples/good/good-enum-unknown-001.dart"
+  },
+  {
+    "id": "DART-DATA-JSON",
+    "title": "fromJson/toJson: enum хранится как .value; парсинг через fromValue",
+    "category": "dart/serialization",
+    "severity": "error",
+    "tags": [
+      "json",
+      "serialization",
+      "enum"
+    ],
+    "linter_rule": null,
+    "coverage": "ai",
+    "bad_snippet": "docs/examples/bad/bad-json-serde-001.dart",
+    "good_snippet": "docs/examples/good/good-json-serde-001.dart"
+  },
+  {
+    "id": "DART-DATA-EQUATABLE",
+    "title": "Дата‑модели наследуются от Equatable",
+    "category": "dart/equality",
+    "severity": "error",
+    "tags": [
+      "equatable",
+      "value-object"
+    ],
+    "linter_rule": null,
+    "coverage": "ai",
+    "bad_snippet": "docs/examples/bad/bad-equatable-001.dart",
+    "good_snippet": "docs/examples/good/good-equatable-001.dart"
+  }
+]

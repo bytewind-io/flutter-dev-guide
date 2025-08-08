@@ -1,0 +1,25 @@
+name: PR checks (example for app repos)
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+
+jobs:
+  lint_and_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+      - run: dart --version
+      - run: dart run byewind_lints:check    # ваш линтер (отдельный пакет)
+      - run: dart format --set-exit-if-changed .
+      - run: dart analyze --fatal-infos --fatal-warnings
+      - run: dart test --reporter expanded
+
+  ai_review:
+    needs: lint_and_tests
+    if: ${{ needs.lint_and_tests.result == 'success' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      # - name: AI PR Review (пример)
+      #   run: ./scripts/ai_pr_review --rules ./standards/docs/mappings/rules_map.json --pr ${{ github.event.pull_request.number }}
