@@ -85,5 +85,22 @@
     "coverage": "ai",
     "bad_snippet": "docs/examples/bad/bad-equatable-001.dart",
     "good_snippet": "docs/examples/good/good-equatable-001.dart"
+  },
+  {
+    "id": "DART-LIST-SAFE-ACCESS",
+    "title": "Безопасный доступ к элементам списка с проверкой индексов",
+    "category": "dart/lists",
+    "severity": "error",
+    "tags": [
+      "list",
+      "array",
+      "index",
+      "bounds",
+      "crash"
+    ],
+    "linter_rule": null,
+    "coverage": "ai",
+    "bad_snippet": "docs/examples/bad/bad-list-access-001.dart",
+    "good_snippet": "docs/examples/good/good-list-access-001.dart"
   }
 ]

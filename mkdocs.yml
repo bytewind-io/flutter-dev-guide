@@ -8,6 +8,12 @@ markdown_extensions:
   - pymdownx.snippets:
       check_paths: true
   - pymdownx.highlight
+
+# Явно включаем все файлы
+docs_dir: docs
+extra:
+  include_templates: true
+
 nav:
   - Главная: index.md
   - Руководства:
@@ -22,5 +28,13 @@ nav:
       - Неизвестные значения enum: rules/dart/DART-DATA-ENUM-UNKNOWN.md
       - fromJson/toJson с enum.value: rules/dart/DART-DATA-JSON.md
       - Equatable для моделей: rules/dart/DART-DATA-EQUATABLE.md
+      - Работа со списками: rules/dart/DART-LIST-SAFE-ACCESS.md
   - Соответствия:
     - Маппинг линтера: mappings/linter_rules.md
+  - Шаблоны:
+    - Обзор шаблонов: templates-docs/index.md
+    - Руководство по шаблонам: templates-docs/templates-guide.md
+    - Шаблон правила: templates-docs/rule-template.md
+    - Шаблон PR: templates-docs/pr-template.md
+    - Чек-лист PR: templates-docs/pr-checklist.md
+    - GitHub Actions: templates-docs/pr-check.yml

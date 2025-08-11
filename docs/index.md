@@ -24,6 +24,9 @@
 - **[DART-DATA-ENUM-UNKNOWN](rules/dart/DART-DATA-ENUM-UNKNOWN.md)** - Обработка неизвестных значений enum
 - **[DART-DATA-JSON](rules/dart/DART-DATA-JSON.md)** - JSON сериализация с `enum.value` и `fromValue`
 
+### 📋 Работа со списками
+- **[DART-LIST-SAFE-ACCESS](rules/dart/DART-LIST-SAFE-ACCESS.md)** - Безопасный доступ к элементам списка с проверкой индексов
+
 ## 🚀 Быстрый старт
 
 1. **Добавь репозиторий стандартов** как submodule или subtree
