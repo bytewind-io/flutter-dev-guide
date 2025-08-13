@@ -15,7 +15,7 @@ ai_hint: >
   Data models should extend Equatable and list all significant fields in props to ensure value equality.
 ---
 
-## Описание правила
+## Пояснение
 
 Data-модели должны наследоваться от `Equatable` и переопределять равенство по полям. Это обеспечивает корректную работу в коллекциях, кешах, тестах и предотвращает ошибки сравнения объектов.
 

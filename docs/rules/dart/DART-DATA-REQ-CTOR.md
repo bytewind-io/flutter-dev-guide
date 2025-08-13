@@ -16,7 +16,7 @@ ai_hint: >
   Nullable fields keep nullable types but still require explicit null when creating an object.
 ---
 
-## Описание правила
+## Пояснение
 
 Во всех data-классах следует делать все параметры конструктора `required`, даже если их тип nullable. Это обеспечивает явность в коде и предотвращает случайное создание объектов с неинициализированными полями.
 
