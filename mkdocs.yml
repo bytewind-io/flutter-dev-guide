@@ -1,15 +1,19 @@
 site_name: Flutter/Dart Standards
 theme:
   name: material
+
 markdown_extensions:
   - admonition
   - toc:
       permalink: true
   - pymdownx.snippets:
       check_paths: true
-  - pymdownx.highlight
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.superfences
+  - attr_list
+  - md_in_html   # опционально, если используешь <small> и другой HTML в тексте
 
-# Явно включаем все файлы
 docs_dir: docs
 extra:
   include_templates: true

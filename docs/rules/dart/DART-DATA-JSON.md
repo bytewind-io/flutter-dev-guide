@@ -14,7 +14,7 @@ ai_hint: >
   Ensure fromJson converts numeric codes to enum via fromValue, and toJson serializes enum back to its numeric value.
 ---
 
-## Описание правила
+## Пояснение
 
 При работе с JSON сериализацией enum'ов в Dart необходимо правильно обрабатывать их числовые значения. Это правило обеспечивает типобезопасность и корректную работу с API.
 
@@ -27,7 +27,8 @@ ai_hint: >
 
 ## Плохо
 
-```dart:docs/examples/bad/bad-json-serde-001.dart
+```dart title="docs/examples/bad/bad-json-serde-001.dart"
+
 class BasePaginationRequest {
   const BasePaginationRequest({
     required this.offset,

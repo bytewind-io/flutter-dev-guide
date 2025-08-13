@@ -15,7 +15,7 @@ ai_hint: >
   that explicitly fills null/defaults and delegates to the strict constructor.
 ---
 
-## Описание правила
+## Пояснение
 
 При создании объектов с отсутствующими или генерируемыми полями следует использовать factory конструкторы. Это обеспечивает явность в коде и делегирование к основному строгому конструктору.
 
@@ -28,7 +28,8 @@ ai_hint: >
 
 ## Плохо
 
-```dart:docs/examples/bad/bad-factory-001.dart
+```dart title="docs/examples/bad/bad-factory-001.dart"
+
 class User {
   const User({
     required this.id,
