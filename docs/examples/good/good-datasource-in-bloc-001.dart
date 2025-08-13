@@ -13,12 +13,12 @@ class SaveThingEvent {
 class SaveThingState {}
 
 class CreateThingBloc extends Bloc<SaveThingEvent, SaveThingState> {
-  CreateThingBloc(this._repo) : super(SaveThingState()) {
+  CreateThingBloc({required this.repo}) : super(SaveThingState()) {
     on<SaveThingEvent>(_save);
   }
-  final ThingRepository _repo; // ✅ зависимость от абстракции
+  final ThingRepository _repository; // ✅ зависимость от абстракции
 
   Future<void> _save(SaveThingEvent e, Emitter<SaveThingState> emit) async {
-    await _repo.saveThing(userId: e.userId, title: e.title); // ✅ без Firebase в BLoC
+    await _repository.saveThing(userId: e.userId, title: e.title); // ✅ без Firebase в BLoC
   }
 }

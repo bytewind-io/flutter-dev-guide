@@ -63,18 +63,6 @@ class CreateThingWidget extends StatelessWidget {
       create: (context) => CreateThingBloc(
         context.read<ThingRepository>(), // Внедряется через DI
       ),
-      child: BlocListener<CreateThingBloc, CreateThingState>(
-        listener: (context, state) {
-          if (state is CreateThingSuccess) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(content: Text('Thing saved!')),
-            );
-          } else if (state is CreateThingFailure) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Error: ${state.message}')),
-            );
-          }
-        },
         child: const _CreateThingForm(),
       ),
     );
