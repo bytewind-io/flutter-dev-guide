@@ -33,7 +33,8 @@ Data-модели должны наследоваться от `Equatable` и п
 
 ## Плохо
 
-```dart:docs/examples/bad/bad-equatable-001.dart
+```dart title="docs/examples/bad/bad-equatable-001.dart"
+
 class User {
   const User({
     required this.id,

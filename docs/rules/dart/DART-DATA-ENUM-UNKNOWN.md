@@ -27,7 +27,8 @@ ai_hint: >
 
 ## Плохо
 
-```dart:docs/examples/bad/bad-enum-unknown-001.dart
+```dart title="docs/examples/bad/bad-enum-unknown-001.dart"
+
 enum ItemType {
   book(1),
   movie(2),

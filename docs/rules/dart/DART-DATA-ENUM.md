@@ -28,7 +28,9 @@ ai_hint: >
 
 ## Плохо
 
-```dart:docs/examples/bad/bad-enum-parse-001.dart
+```dart title="docs/examples/bad/bad-enum-parse-001.dart"
+
+
 class User {
   const User({
     required this.name,

@@ -28,7 +28,8 @@ ai_hint: >
 
 ## Плохо
 
-```dart
+```dart title="docs/examples/bad/bad-list-access-001.dart"
+
 // ❌ Обращение к элементам списка без проверки границ
 class ConversationListItem extends StatelessWidget {
   final ConversationModel model;

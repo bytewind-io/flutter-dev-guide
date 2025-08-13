@@ -27,7 +27,8 @@ ai_hint: >
 
 ## Плохо
 
-```dart:docs/examples/bad/bad-json-serde-001.dart
+```dart title="docs/examples/bad/bad-json-serde-001.dart"
+
 class BasePaginationRequest {
   const BasePaginationRequest({
     required this.offset,
