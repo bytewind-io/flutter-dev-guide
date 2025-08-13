@@ -15,7 +15,7 @@ ai_hint: >
   Use safe access methods like elementAtOrNull or conditional checks.
 ---
 
-## Описание правила
+## Пояснение
 
 При работе со списками необходимо всегда проверять границы массива перед обращением к элементам по индексу. Обращение к несуществующему индексу приводит к `RangeError` и краху приложения.
 
@@ -28,7 +28,8 @@ ai_hint: >
 
 ## Плохо
 
-```dart
+```dart title="docs/examples/bad/bad-list-access-001.dart"
+
 // ❌ Обращение к элементам списка без проверки границ
 class ConversationListItem extends StatelessWidget {
   final ConversationModel model;

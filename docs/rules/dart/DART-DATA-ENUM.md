@@ -15,7 +15,7 @@ ai_hint: >
   Implement fromValue(int?) -> T? that returns null for unknown values.
 ---
 
-## Описание правила
+## Пояснение
 
 Вместо использования магических чисел для представления дискретных состояний следует использовать enum'ы. Это обеспечивает типобезопасность, читаемость кода и предотвращает ошибки.
 
@@ -28,7 +28,9 @@ ai_hint: >
 
 ## Плохо
 
-```dart:docs/examples/bad/bad-enum-parse-001.dart
+```dart title="docs/examples/bad/bad-enum-parse-001.dart"
+
+
 class User {
   const User({
     required this.name,

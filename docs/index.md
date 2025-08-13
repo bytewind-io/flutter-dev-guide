@@ -14,6 +14,9 @@
 
 ## 📚 Основные правила
 
+### 🏗️ Архитектура
+- **[ARCH-DS-NO-DIRECT-ACCESS](rules/dart/ARCH-DS-NO-DIRECT-ACCESS.md)** - UI и BLoC не обращаются к Firebase/SQLite/HTTP напрямую
+
 ### 🎨 Data-классы и модели
 - **[DART-DATA-REQ-CTOR](rules/dart/DART-DATA-REQ-CTOR.md)** - Строгие конструкторы с `required` для всех полей
 - **[DART-DATA-EQUATABLE](rules/dart/DART-DATA-EQUATABLE.md)** - Наследование от `Equatable` для value equality

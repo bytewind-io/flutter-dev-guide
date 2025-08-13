@@ -14,7 +14,7 @@ ai_hint: >
   For unknown enum inputs prefer null. If domain requires non-null, provide explicit unknown variant.
 ---
 
-## Описание правила
+## Пояснение
 
 При парсинге enum'ов из внешних данных (JSON, API) могут встречаться неизвестные значения. По умолчанию следует возвращать `null`, но если логика требует non-null, допускается использование специального `unknown` варианта.
 
@@ -27,7 +27,8 @@ ai_hint: >
 
 ## Плохо
 
-```dart:docs/examples/bad/bad-enum-unknown-001.dart
+```dart title="docs/examples/bad/bad-enum-unknown-001.dart"
+
 enum ItemType {
   book(1),
   movie(2),
