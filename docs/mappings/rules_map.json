@@ -102,5 +102,22 @@
     "coverage": "ai",
     "bad_snippet": "docs/examples/bad/bad-list-access-001.dart",
     "good_snippet": "docs/examples/good/good-list-access-001.dart"
+  },
+  {
+    "id": "ARCH-REPO-STATELESS",
+    "title": "Репозиторий статичен: никаких INIT/SETUP и скрытого состояния",
+    "category": "architecture/repository",
+    "severity": "error",
+    "tags": [
+      "clean-architecture",
+      "repository",
+      "stateless",
+      "idempotency",
+      "boundaries"
+    ],
+    "linter_rule": null,
+    "coverage": "ai",
+    "bad_snippet": "docs/examples/bad/bad-repo-state-001.dart",
+    "good_snippet": "docs/examples/good/good-repo-state-001.dart"
   }
 ]

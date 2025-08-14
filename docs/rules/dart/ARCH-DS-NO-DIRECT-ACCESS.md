@@ -87,14 +87,14 @@ class GetCurrentUserUseCase {
 ### 3. Dependency Injection
 ```dart
 class CreateThingBloc extends Bloc<SaveThingEvent, SaveThingState> {
-  CreateThingBloc(this._repository) : super(SaveThingState()) {
+  CreateThingBloc({requred this.repository}) : super(SaveThingState()) {
     on<SaveThingEvent>(_save);
   }
   
-  final UserRepository _repository; // Внедряется через DI
+  final UserRepository repository; // Внедряется через DI
   
   Future<void> _save(SaveThingEvent e, Emitter<SaveThingState> emit) async {
-    final user = await _repository.getCurrentUser();
+    final user = await repository.getCurrentUser();
     if (user != null) {
       await _repository.saveThing(userId: user.id, title: e.title);
     }
