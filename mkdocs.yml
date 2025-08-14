@@ -37,6 +37,8 @@ nav:
         - fromJson/toJson с enum.value: rules/dart/DART-DATA-JSON.md
         - Equatable для моделей: rules/dart/DART-DATA-EQUATABLE.md
         - Работа со списками: rules/dart/DART-LIST-SAFE-ACCESS.md
+      - Качество кода:
+        - Запрещено поставлять закомментированный устаревший код: rules/dart/quality/DART-CLEAN-NO-CMT-LEGACY.md
   - Соответствия:
     - Маппинг линтера: mappings/linter_rules.md
   - Шаблоны:
