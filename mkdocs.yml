@@ -26,13 +26,16 @@ nav:
     - Глоссарий: guides/glossary.md
   - Правила:
     - Dart:
-      - Строгий конструктор: rules/dart/DART-DATA-REQ-CTOR.md
-      - Factory при неполных данных: rules/dart/DART-DATA-FACTORY.md
-      - Enum вместо чисел: rules/dart/DART-DATA-ENUM.md
-      - Неизвестные значения enum: rules/dart/DART-DATA-ENUM-UNKNOWN.md
-      - fromJson/toJson с enum.value: rules/dart/DART-DATA-JSON.md
-      - Equatable для моделей: rules/dart/DART-DATA-EQUATABLE.md
-      - Работа со списками: rules/dart/DART-LIST-SAFE-ACCESS.md
+      - Архитектура:
+        - UI и BLoC не обращаются к Firebase/SQLite/HTTP напрямую: rules/dart/ARCH-DS-NO-DIRECT-ACCESS.md
+      - Data-классы и модели:
+        - Строгий конструктор: rules/dart/DART-DATA-REQ-CTOR.md
+        - Factory при неполных данных: rules/dart/DART-DATA-FACTORY.md
+        - Enum вместо чисел: rules/dart/DART-DATA-ENUM.md
+        - Неизвестные значения enum: rules/dart/DART-DATA-ENUM-UNKNOWN.md
+        - fromJson/toJson с enum.value: rules/dart/DART-DATA-JSON.md
+        - Equatable для моделей: rules/dart/DART-DATA-EQUATABLE.md
+        - Работа со списками: rules/dart/DART-LIST-SAFE-ACCESS.md
   - Соответствия:
     - Маппинг линтера: mappings/linter_rules.md
   - Шаблоны:
