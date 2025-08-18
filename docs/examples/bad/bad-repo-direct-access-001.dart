@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import '../data/things_repository.dart'; // ❌ импорт конкретной реализации
+import '../data/things_repository.dart'; // ❌ импорт конкретной реализации репозитория, a не интерфейса
 
 class MyWidget extends StatelessWidget {
   const MyWidget({super.key});

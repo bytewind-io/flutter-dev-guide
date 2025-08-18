@@ -18,14 +18,13 @@ class TextFilter extends FetchFilter {
   final String text;
 }
 
-@LazySingleton(as: ThingsRepositoryI)
 class ThingsRepository implements ThingsRepositoryI {
-  ThingsRepository({required BaseDataApiI base}) : _base = base;
+  ThingsRepository({required DataApiI base}) : _base = base;
 
-  final BaseDataApiI _base;
+  final DataApiI _base;
 
   @override
-  Stream<List<ThingsModel>> fetch(FetchFilter filter) {
+  Future<Stream<List<ThingsModel>>> fetch(FetchFilter filter) {
     return switch (filter) {
       EmptyFilter() => _baseDataApi.fetchAllThings(),
       IdsFilter(ids: final ids) => _baseDataApi.fetchAllThings().map(
@@ -54,7 +53,7 @@ class ThingsRepository implements ThingsRepositoryI {
 
 // Интерфейс в конце файла; dispose() — последним методом
 abstract class ThingsRepositoryI {
-  Future<List<ThingsModel>> fetch(FetchFilter filter);
+  Future<Stream<List<ThingsModel>>> fetch(FetchFilter filter);
   Future<void> deleteByType(String type);
   Future<void> deleteByUid(String uid);
   Future<void> deleteByUids(List<String> uids);
