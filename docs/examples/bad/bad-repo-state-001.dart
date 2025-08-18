@@ -22,7 +22,7 @@ class MaxItemsRepository implements MaxItemsRepositoryI {
 
   @override
   Future<({bool isSpecial, int maxItems})> init(int initialValue) async {
-    // ❌ Клиент должен позвать init() перед остальными методами
+    // ❌ Клиент вынужден позвать init() перед остальными методами
     final isSpecial = await _maxItemsApi.loadIsSpecial();
     return (isSpecial: isSpecial, maxItems: initialValue);
   }

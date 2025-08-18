@@ -28,7 +28,7 @@ nav:
     - Dart:
       - Архитектура:
         - UI и BLoC не обращаются к Firebase/SQLite/HTTP напрямую: rules/dart/ARCH-DS-NO-DIRECT-ACCESS.md
-        - Repository stateless: rules/dart/ARCH-REPO-STATELESS.md
+        - Repository : rules/dart/architecture/ARCH-REPO-STATELESS.md
       - Data-классы и модели:
         - Строгий конструктор: rules/dart/DART-DATA-REQ-CTOR.md
         - Factory при неполных данных: rules/dart/DART-DATA-FACTORY.md
