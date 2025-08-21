@@ -119,5 +119,20 @@
     "coverage": "ai",
     "bad_snippet": "docs/examples/bad/bad-repo-state-001.dart",
     "good_snippet": "docs/examples/good/good-repo-state-001.dart"
+  },
+  {
+    "id": "ARCH-IMPORT-ABSTRACTION",
+    "title": "Зависим от абстракций: импорт интерфейсов вместо реализаций",
+    "category": "architecture/dependency",
+    "severity": "error",
+    "tags": [
+      "interface",
+      "implementation",
+      "imports"
+    ],
+    "linter_rule": null,
+    "coverage": "ai",
+    "bad_snippet": "docs/examples/bad/bad-import-implementation-001.dart",
+    "good_snippet": "docs/examples/good/good-import-abstraction-001.dart"
   }
 ]

@@ -16,7 +16,8 @@
 
 ### 🏗️ Архитектура
 - **[ARCH-DS-NO-DIRECT-ACCESS](rules/dart/ARCH-DS-NO-DIRECT-ACCESS.md)** - UI и BLoC не обращаются к Firebase/SQLite/HTTP напрямую
-- **[ARCH-REPO-STATELESS](rules/dart/ARCH-REPO-STATELESS.md)** - Репозиторий статичен: никаких INIT/SETUP и скрытого состояния
+- **[ARCH-REPO-STATELESS](rules/dart/architecture/ARCH-REPO-STATELESS.md)** - Репозиторий статичен: никаких INIT/SETUP и скрытого состояния
+- **[ARCH-IMPORT-ABSTRACTION](rules/dart/architecture/ARCH-IMPORT-ABSTRACTION.md)** - Зависим от абстракций: импорт интерфейсов вместо реализаций
 
 ### 🎨 Data-классы и модели
 - **[DART-DATA-REQ-CTOR](rules/dart/DART-DATA-REQ-CTOR.md)** - Строгие конструкторы с `required` для всех полей
