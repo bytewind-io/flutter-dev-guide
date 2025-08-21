@@ -27,35 +27,8 @@ ai_hint: >
 
 ## Плохо
 
-```dart title="docs/examples/bad/bad-enum-unknown-001.dart"
-
-enum ItemType {
-  book(1),
-  movie(2),
-  music(3);
-
-  const ItemType(this.value);
-  final int value;
-
-  static ItemType fromValue(int raw) {
-    // ❌ Может выбросить исключение для неизвестных значений
-    for (final e in ItemType.values) {
-      if (e.value == raw) return e;
-    }
-    throw ArgumentError('Unknown ItemType: $raw'); // ❌ Исключение
-  }
-}
-
-class Item {
-  const Item({required this.type});
-  final ItemType type;
-
-  factory Item.fromJson(Map<String, dynamic> json) {
-    return Item(
-      type: ItemType.fromValue(json['type'] as int), // ❌ Может упасть
-    );
-  }
-}
+```dart
+--8<-- "docs/examples/bad/bad-enum-unknown-001.dart"
 ```
 
 **Проблемы:**
@@ -66,40 +39,8 @@ class Item {
 
 ## Хорошо
 
-```dart:docs/examples/good/good-enum-unknown-001.dart
-enum ItemType {
-  book(1),
-  movie(2),
-  music(3);
-
-  const ItemType(this.value);
-  final int value;
-
-  static ItemType? fromValue(int? raw) {
-    if (raw == null) return null;
-    
-    // ✅ Возвращаем null для неизвестных значений
-    for (final e in ItemType.values) {
-      if (e.value == raw) return e;
-    }
-    return null; // ✅ Безопасно для неизвестных значений
-  }
-}
-
-class Item {
-  const Item({required this.type});
-  final ItemType type;
-
-  factory Item.fromJson(Map<String, dynamic> json) {
-    final type = ItemType.fromValue(json['type'] as int?);
-    if (type == null) {
-      // ✅ Явная обработка неизвестного типа
-      throw ArgumentError('Unknown ItemType: ${json['type']}');
-    }
-    
-    return Item(type: type);
-  }
-}
+```dart
+--8<-- "docs/examples/good/good-enum-unknown-001.dart"
 ```
 
 **Преимущества:**
@@ -113,24 +54,7 @@ class Item {
 Если логика требует non-null, можно добавить специальный `unknown` вариант:
 
 ```dart
-enum ItemType {
-  book(1),
-  movie(2),
-  music(3),
-  unknown(-1); // ✅ Специальный вариант для неизвестных значений
-
-  const ItemType(this.value);
-  final int value;
-
-  static ItemType fromValue(int? raw) {
-    if (raw == null) return ItemType.unknown;
-    
-    for (final e in ItemType.values) {
-      if (e.value == raw) return e;
-    }
-    return ItemType.unknown; // ✅ Возвращаем unknown вместо null
-  }
-}
+--8<-- "docs/examples/good/good-enum-unknown-002.dart"
 ```
 
 ## Примеры использования
@@ -138,66 +62,13 @@ enum ItemType {
 ### Безопасный парсинг с null
 
 ```dart
-enum OrderStatus {
-  pending(0),
-  confirmed(1),
-  shipped(2),
-  delivered(3);
-
-  const OrderStatus(this.value);
-  final int value;
-
-  static OrderStatus? fromValue(int? raw) {
-    if (raw == null) return null;
-    
-    for (final e in OrderStatus.values) {
-      if (e.value == raw) return e;
-    }
-    return null; // ✅ null для неизвестных значений
-  }
-}
-
-class Order {
-  final String id;
-  final OrderStatus? status; // nullable для неизвестных статусов
-
-  const Order({required this.id, this.status});
-
-  factory Order.fromJson(Map<String, dynamic> json) {
-    return Order(
-      id: json['id'] as String,
-      status: OrderStatus.fromValue(json['status'] as int?), // ✅ безопасно
-    );
-  }
-}
+--8<-- "docs/examples/good/good-enum-unknown-003.dart"
 ```
 
 ### Обработка неизвестных значений
 
 ```dart
-class DataProcessor {
-  static void processItem(Item item) {
-    final type = item.type;
-    
-    if (type == null) {
-      // ✅ Явная обработка неизвестного типа
-      print('Warning: Unknown item type, skipping processing');
-      return;
-    }
-    
-    switch (type) {
-      case ItemType.book:
-        print('Processing book...');
-        break;
-      case ItemType.movie:
-        print('Processing movie...');
-        break;
-      case ItemType.music:
-        print('Processing music...');
-        break;
-    }
-  }
-}
+--8<-- "docs/examples/good/good-enum-unknown-004.dart"
 ```
 
 ## Проверка правила

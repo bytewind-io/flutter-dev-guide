@@ -27,29 +27,8 @@ ai_hint: >
 
 ## Плохо
 
-```dart title="docs/examples/bad/bad-json-serde-001.dart"
-
-class BasePaginationRequest {
-  const BasePaginationRequest({
-    required this.offset,
-    required this.filterType, // ❌ тип int?, должен быть enum?
-  });
-
-  final int offset;
-  final int? filterType; // ❌
-
-  factory BasePaginationRequest.fromJson(Map<String, dynamic> json) {
-    return BasePaginationRequest(
-      offset: json['Offset'] as int,
-      filterType: json['FilterType'] as int?, // ❌ без парсинга в enum
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        'Offset': offset,
-        'FilterType': filterType?.toString(), // ❌ сериализация в строку
-      };
-}
+```dart
+--8<-- "docs/examples/bad/bad-json-serde-001.dart"
 ```
 
 **Проблемы:**
@@ -60,44 +39,8 @@ class BasePaginationRequest {
 
 ## Хорошо
 
-```dart:docs/examples/good/good-json-serde-001.dart
-enum FilterType {
-  recent(1),
-  popular(2);
-
-  const FilterType(this.value);
-  final int value;
-
-  static FilterType? fromValue(int? raw) {
-    if (raw == null) return null;
-    for (final e in FilterType.values) {
-      if (e.value == raw) return e;
-    }
-    return null;
-  }
-}
-
-class BasePaginationRequest {
-  const BasePaginationRequest({
-    required this.offset,
-    required this.filterType,
-  });
-
-  final int offset;
-  final FilterType? filterType; // ✅ enum в модели
-
-  factory BasePaginationRequest.fromJson(Map<String, dynamic> json) {
-    return BasePaginationRequest(
-      offset: json['Offset'] as int,
-      filterType: FilterType.fromValue(json['FilterType'] as int?) ?? FilterType.recent, // ✅ парсинг через fromValue
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        'Offset': offset,
-        'FilterType': filterType?.value, // ✅ обратно в число
-      };
-}
+```dart
+--8<-- "docs/examples/good/good-json-serde-001.dart"
 ```
 
 **Преимущества:**
@@ -111,46 +54,13 @@ class BasePaginationRequest {
 ### Создание enum с числовыми значениями
 
 ```dart
-enum Status {
-  pending(0),
-  active(1),
-  completed(2),
-  cancelled(3);
-
-  const Status(this.value);
-  final int value;
-
-  static Status? fromValue(int? raw) {
-    if (raw == null) return null;
-    for (final e in Status.values) {
-      if (e.value == raw) return e;
-    }
-    return null;
-  }
-}
+--8<-- "docs/examples/good/good-json-serde-002.dart"
 ```
 
 ### Сериализация в JSON
 
 ```dart
-class Task {
-  final String title;
-  final Status status;
-
-  const Task({required this.title, required this.status});
-
-  factory Task.fromJson(Map<String, dynamic> json) {
-    return Task(
-      title: json['title'] as String,
-      status: Status.fromValue(json['status'] as int?) ?? Status.pending,
-    );
-  }
-
-  Map<String, dynamic> toJson() => {
-        'title': title,
-        'status': status.value, // ✅ используем .value
-      };
-}
+--8<-- "docs/examples/good/good-json-serde-003.dart"
 ```
 
 ## Проверка правила
