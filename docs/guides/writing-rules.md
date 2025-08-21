@@ -7,7 +7,7 @@
 - `linter_rule` (если покрывается линтером),
 - `coverage: lint|ai|manual`.
 
-Используй шаблон из `docs/templates/rule-template.md`.
+Используй шаблон из `docs/templates-docs/rule-template.md`.
 
 ## Шаблон правила
 
