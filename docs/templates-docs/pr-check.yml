@@ -22,4 +22,4 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       # - name: AI PR Review (пример)
-      #   run: ./scripts/ai_pr_review --rules ./standards/docs/mappings/rules_map.json --pr ${{ github.event.pull_request.number }}
+      #   run: ./scripts/ai_pr_review --rules ./docs/mappings/rules_map.json --pr ${{ github.event.pull_request.number }}
