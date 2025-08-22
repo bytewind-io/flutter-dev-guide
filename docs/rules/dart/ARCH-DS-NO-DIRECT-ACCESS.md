@@ -1,144 +1,192 @@
----
 id: ARCH-DS-NO-DIRECT-ACCESS
 title: "UI и BLoC не обращаются к Firebase/SQLite/HTTP напрямую"
 status: stable
 severity: error
 category: architecture/boundaries
-tags: [ clean-architecture, repository, bloc, ui, datasource, firebase, sqlite, http ]
+tags:
+
+- clean-architecture
+- repository
+- bloc
+- ui
+- datasource
+
+# Проверяем только слой презентации: UI/BLoC/Cubit/Views/Widgets
+
+scope:
+include_paths:
+
+- "lib/**/ui/**"
+- "lib/**/presentation/**"
+- "lib/**/widget/**"
+- "lib/**/view/**"
+- "lib/**/bloc/**"
+- "lib/**/cubit/**"
+  exclude_paths:
+- "lib/**/data/**"
+- "lib/**/infra/**"
+- "lib/**/repository/**"
+- "lib/**/datasource/**"
+- "lib/**/api/**"
+- "lib/**/services/**"
+
+# Явные нарушения: SDK источников данных и прямые вызовы клиентов
+
+detect:
+disallowed_imports:
+
+# Firebase
+
+- "package:cloud_firestore/cloud_firestore.dart"
+- "package:firebase_auth/firebase_auth.dart"
+- "package:firebase_database/firebase_database.dart"
+- "package:firebase_storage/firebase_storage.dart"
+
+# HTTP/GraphQL
+
+- "package:dio/dio.dart"
+- "package:http/http.dart"
+- "package:graphql_flutter/graphql_flutter.dart"
+
+# SQL/NoSQL/ORM
+
+- "package:sqflite/sqflite.dart"
+- "package:isar/isar.dart"
+- "package:hive/hive.dart"
+- "package:hive_flutter/hive_flutter.dart"
+- "package:drift/drift.dart"
+- "package:objectbox/objectbox.dart"
+- "package:realm/realm.dart"
+
+# Локальные/системные хранилища
+
+- "package:shared_preferences/shared_preferences.dart"
+- "package:path_provider/path_provider.dart"
+
+disallowed_calls:
+
+# Firebase singletons
+
+- "FirebaseFirestore.instance"
+- "FirebaseAuth.instance"
+- "FirebaseDatabase.instance"
+- "FirebaseStorage.instance"
+
+# Сетевые клиенты
+
+- "Dio("
+- "http.get("
+- "http.post("
+- "http.put("
+- "http.delete("
+
+# Низкоуровневые сокеты/клиенты
+
+- "HttpClient("
+- "WebSocket.connect("
+
+# Локальные хранилища
+
+- "SharedPreferences.getInstance("
+- "Isar.open("
+- "Hive.openBox("
+
+# Чтобы не ловить ложные срабатывания, явно разрешаем утилиты потоков и инфраструктуру BLoC
+
+allowlist_imports:
+
+- "package:rxdart/rxdart.dart"
+- "package:stream_transform/stream_transform.dart"
+- "package:bloc_concurrency/bloc_concurrency.dart"
+- "package:equatable/equatable.dart"
+- "package:collection/collection.dart"
+- "package:meta/meta.dart"
+- "dart:async"
+
+message: >
+Слои UI/Presentation (включая BLoC/Cubit) не должны импортировать SDK источников данных
+и не должны напрямую вызывать сетевые/БД/хранилищные API. Вынесите доступ к данным
+за интерфейсы (Repository/Gateway/UseCase) в data/infra слой и внедряйте зависимости через DI.
+
+autofix:
+
+# Авто-фиксы ограничены безопасными текстовыми подсказками
+
+suggestion_builder: minimal
+suggestion: >
+Создайте абстракцию (например, UserRepository/ThingRepository) и перенесите обращения
+к {package-or-call} в infra слой. В BLoC внедрите интерфейс через конструктор (DI).
+
 linter_rule:
 coverage: ai
-bad_snippet: bad-datasource-in-bloc-001.dart
-good_snippet: good-datasource-in-bloc-001.dart
-references: [ ]
+
 ai_hint: >
-  Accept either `extends Equatable` or `with EquatableMixin` when a proper `props` is present.
-  If the class file starts with `part of`, resolve the owning library file, merge imports
-  (check that `equatable.dart` is imported there), then evaluate the class.
-  Flag only when neither inheritance nor mixin is used, or `props` is missing/empty.
----
+Флаг ставится ТОЛЬКО если файл относится к UI/Presentation/BLoC слоям (см. scope)
+И при этом:
+(1) есть import из deny-list (Firebase/HTTP/DB/Storage SDK),
+ИЛИ (2) есть прямые вызовы из disallowed_calls.
+Игнорируй любые импорты утилит потоков (rxdart, stream_transform, bloc_concurrency),
+а также equatable/collection/meta — это не источники данных.
+Если файл содержит 'part of', проанализируй владельца библиотеки перед проверкой импортов.
+Не предлагай замену кода для RxDart — это вне области этого правила.
 
-## Пояснение
+# Эти поля остаются для совместимости с репозиторием примеров
 
-Слой **UI** (виджеты) и **BLoC** — это презентация/оркестрация. Они **не** знают о конкретных
-источниках данных (Firebase, SQLite, HTTP и т.п.) и **не** имеют от них зависимостей.  
-Доступ к данным осуществляется через **интерфейсы** (Repository/Gateway/UseCase), реализованные в *
-*infra/data** слое и подменяемые в тестах.
+bad_snippet: docs/examples/bad/bad-datasource-in-bloc-001.dart
+good_snippet: docs/examples/good/good-datasource-in-bloc-001.dart
+references: [ ]
 
-## Запрещено
+tests:
+should_flag:
 
-- Импорты в UI/BLoC из `cloud_firestore`, `firebase_auth`, `sqflite`, `isar`, `hive`,
-  `google_ml_kit`, `http`, `dio`, `shared_preferences` и т.п.
-- Прямые вызовы `FirebaseFirestore.instance...`, `FirebaseAuth.instance...`, `openDatabase(...)`,
-  `Dio().get(...)`, `HttpClient()...`, `SharedPreferences...`.
-
-## Плохо (BLoC)
-
-```dart
---8
-<
---
-"
-docs/examples/bad/bad-datasource-in-bloc-001.dart
-"
-```
-
-## Хорошо (BLoC)
-
-```dart
---8
-<
---
-"
-docs/examples/good/good-datasource-in-bloc-001.dart
-"
-```
-
-## Плохо (UI Widget)
-
-```dart
---8
-<
---
-"
-docs/examples/bad/bad-datasource-in-widget-001.dart
-"
-```
-
-## Хорошо (UI Widget)
-
-```dart
---8
-<
---
-"
-docs/examples/good/good-datasource-in-widget-001.dart
-"
-```
-
-## Альтернативы
-
-### 1. Repository Pattern
-
-```dart
-abstract class UserRepository {
-  Future<User?> getCurrentUser();
-
-  Future<void> saveUser(User user);
-}
-
-class UserRepositoryImpl implements UserRepository {
-  final FirebaseAuth _auth;
-  final FirebaseFirestore _firestore;
-
-  UserRepositoryImpl(this._auth, this._firestore);
-
-  @override
-  Future<User?> getCurrentUser() async {
-    return _auth.currentUser;
+- path: "lib/module/home/presentation/bloc/home_bloc.dart"
+  content: |
+  import 'package:flutter_bloc/flutter_bloc.dart';
+  import 'package:cloud_firestore/cloud_firestore.dart'; // ❌
+  class HomeBloc extends Bloc<int, int> {
+  HomeBloc(): super(0) {
+  on<int>((e, emit) async {
+  final uid = "x";
+  await FirebaseFirestore.instance // ❌
+  .collection('item')
+  .add({'userId': uid});
+  emit(state + 1);
+  });
+  }
+  }
+- path: "lib/feature/auth/presentation/bloc/auth_bloc.dart"
+  content: |
+  import 'package:flutter_bloc/flutter_bloc.dart';
+  import 'package:firebase_auth/firebase_auth.dart'; // ❌
+  class AuthBloc extends Bloc<int, int> {
+  AuthBloc(): super(0) {
+  on<int>((e, emit) {
+  final uid = FirebaseAuth.instance.currentUser?.uid; // ❌
+  emit(state + (uid == null ? 0 : 1));
+  });
+  }
   }
 
-  @override
-  Future<void> saveUser(User user) async {
-    await _firestore.collection('users').doc(user.id).set(user.toJson());
+should_pass:
+
+- path: "lib/module/home/bloc/home_bloc/home_bloc.dart"
+  content: |
+  import 'package:flutter_bloc/flutter_bloc.dart';
+  import 'package:rxdart/rxdart.dart'; // ✅ допустимо
+  typedef Evt<X> = EventTransformer<X>;
+  Evt<E> debounceSwitchMap<E>(Duration d) =>
+  (events, mapper) => events.debounceTime(d).switchMap(mapper);
+  class HomeBloc extends Bloc<int, int> {
+  HomeBloc(): super(0) {
+  on<int>((e, emit) => emit(state + 1), transformer: debounceSwitchMap(const Duration(milliseconds:
+  300)));
   }
-}
-```
-
-### 2. Use Case Pattern
-
-```dart
-class GetCurrentUserUseCase {
-  final UserRepository _repository;
-
-  GetCurrentUserUseCase(this._repository);
-
-  Future<User?> call() => _repository.getCurrentUser();
-}
-```
-
-### 3. Dependency Injection
-
-```dart
-class CreateThingBloc extends Bloc<SaveThingEvent, SaveThingState> {
-  CreateThingBloc({requred this.repository}) : super(SaveThingState()) {
-    on<SaveThingEvent>(_save);
   }
-
-  final UserRepository repository; // Внедряется через DI
-
-  Future<void> _save(SaveThingEvent e, Emitter<SaveThingState> emit) async {
-    final user = await repository.getCurrentUser();
-    if (user != null) {
-      await _repository.saveThing(userId: user.id, title: e.title);
-    }
+- path: "lib/feature/users/data/user_repository_impl.dart"
+  content: |
+  import 'package:cloud_firestore/cloud_firestore.dart'; // ✅ допустимо: data слой
+  class UserRepositoryImpl {
+  final FirebaseFirestore _db;
+  UserRepositoryImpl(this._db);
+  Future<void> saveUser(String id) => _db.collection('users').doc(id).set({'id': id});
   }
-}
-```
-
-## Проверка
-
-- [ ] В UI/BLoC нет импортов `cloud_firestore`, `firebase_auth`, `sqflite`, `http` и т.п.
-- [ ] Все обращения к данным идут через абстрактные интерфейсы
-- [ ] Зависимости внедряются через конструктор (DI)
-- [ ] UI только диспатчит события, не содержит бизнес-логики
-- [ ] BLoC использует Repository/UseCase, не знает о конкретных источниках данных
