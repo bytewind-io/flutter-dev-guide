@@ -28,37 +28,8 @@ ai_hint: >
 
 ## Плохо
 
-```dart title="docs/examples/bad/bad-factory-001.dart"
-
-class User {
-  const User({
-    required this.id,
-    required this.name,
-    required this.email,
-  });
-
-  final String id;
-  final String name;
-  final String email;
-
-  // ❌ Дублирование логики создания
-  static User createFromApi(Map<String, dynamic> json) {
-    return User(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      email: json['email'] as String,
-    );
-  }
-
-  // ❌ Еще одно дублирование
-  static User createFromForm(String name, String email) {
-    return User(
-      id: '', // ❌ пустая строка вместо null
-      name: name,
-      email: email,
-    );
-  }
-}
+```dart
+--8<-- "docs/examples/bad/bad-factory-001.dart"
 ```
 
 **Проблемы:**
@@ -67,49 +38,21 @@ class User {
 - Отсутствие делегирования к основному конструктору
 - Пустые строки вместо `null` для отсутствующих полей
 
+### Пример с nullable полями
+
+```dart
+--8<-- "docs/examples/bad/bad-thing-location-model.dart"
+```
+
+**Дополнительные проблемы:**
+- Nullable поля без явного указания значений по умолчанию
+- Изменяемые поля вместо `final`
+- Дублирование логики инициализации в разных конструкторах
+
 ## Хорошо
 
-```dart:docs/examples/good/good-factory-001.dart
-class User {
-  const User({
-    required this.id,
-    required this.name,
-    required this.email,
-  });
-
-  final String id;
-  final String name;
-  final String email;
-
-  // ✅ Factory для создания из API
-  factory User.fromApi(Map<String, dynamic> json) {
-    return User(
-      id: json['id'] as String,
-      name: json['name'] as String,
-      email: json['email'] as String,
-    );
-  }
-
-  // ✅ Factory для создания из формы (без id)
-  factory User.fromForm(String name, String email) {
-    return User(
-      id: '', // ✅ явно указываем пустую строку
-      name: name,
-      email: email,
-    );
-  }
-
-  // ✅ Factory для создания с генерируемым id
-  factory User.create(String name, String email) {
-    return User(
-      id: _generateId(), // ✅ генерируем id
-      name: name,
-      email: email,
-    );
-  }
-
-  static String _generateId() => DateTime.now().millisecondsSinceEpoch.toString();
-}
+```dart
+--8<-- "docs/examples/good/good-factory-001.dart"
 ```
 
 **Преимущества:**
@@ -118,79 +61,43 @@ class User {
 - Читаемость: понятно, откуда берутся значения
 - Гибкость: разные сценарии создания через отдельные factory
 
+### Пример с nullable полями
+
+```dart
+--8<-- "docs/examples/good/good-thing-location-model.dart"
+```
+
+**Дополнительные преимущества:**
+- Строгий основной конструктор с `required` для обязательных полей
+- Factory для разных сценариев создания (временные данные, минимальные данные, JSON)
+- Иммутабельность через `final` поля
+- Явные значения по умолчанию для всех nullable полей
+
 ## Примеры использования
 
 ### Factory для создания с временными данными
 
 ```dart
-class Order {
-  const Order({
-    required this.id,
-    required this.items,
-    required this.total,
-    required this.createdAt,
-  });
-
-  final String id;
-  final List<OrderItem> items;
-  final double total;
-  final DateTime createdAt;
-
-  // ✅ Factory для создания заказа в корзине
-  factory Order.fromCart(List<OrderItem> items) {
-    return Order(
-      id: '', // будет заполнено при сохранении
-      items: items,
-      total: items.fold(0.0, (sum, item) => sum + item.price),
-      createdAt: DateTime.now(),
-    );
-  }
-
-  // ✅ Factory для создания из JSON
-  factory Order.fromJson(Map<String, dynamic> json) {
-    return Order(
-      id: json['id'] as String,
-      items: (json['items'] as List).map((e) => OrderItem.fromJson(e)).toList(),
-      total: json['total'] as double,
-      createdAt: DateTime.parse(json['created_at'] as String),
-    );
-  }
-}
+--8<-- "docs/examples/good/good-factory-002.dart"
 ```
 
 ### Factory с валидацией
 
 ```dart
-class Product {
-  const Product({
-    required this.id,
-    required this.name,
-    required this.price,
-    required this.category,
-  });
-
-  final String id;
-  final String name;
-  final double price;
-  final ProductCategory category;
-
-  // ✅ Factory с валидацией цены
-  factory Product.create(String name, double price, ProductCategory category) {
-    if (price < 0) {
-      throw ArgumentError('Price cannot be negative');
-    }
-    
-    return Product(
-      id: _generateId(),
-      name: name,
-      price: price,
-      category: category,
-    );
-  }
-
-  static String _generateId() => 'prod_${DateTime.now().millisecondsSinceEpoch}';
-}
+--8<-- "docs/examples/good/good-factory-003.dart"
 ```
+
+### Factory для модели с nullable полями
+
+```dart
+--8<-- "docs/examples/good/good-thing-location-model.dart"
+```
+
+**Ключевые моменты:**
+- Основной конструктор использует `required` для обязательных полей
+- Factory конструкторы явно указывают значения по умолчанию
+- Все factory делегируют к основному конструктору
+- Поля сделаны `final` для иммутабельности
 
 ## Проверка правила
 
@@ -201,6 +108,9 @@ class Product {
 - [ ] Все factory делегируют к основному строгому конструктору
 - [ ] Отсутствует дублирование логики создания объектов
 - [ ] Factory имеют понятные названия, отражающие сценарий создания
+- [ ] Основной конструктор использует `required` для обязательных полей
+- [ ] Nullable поля имеют явные значения по умолчанию в factory
+- [ ] Поля сделаны `final` для иммутабельности (где это возможно)
 
 ### Автоматическая проверка
 

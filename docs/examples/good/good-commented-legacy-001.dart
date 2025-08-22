@@ -20,7 +20,7 @@ class PlacesRepo {
   }
 }
 
-// ADR: docs/adr/001-stream-updater.md — обсуждение альтернативного pipe-а
+// Обсуждение альтернативного pipe-а в документации
 
 // Вспомогательные типы для примера
 class PlaceApi { Future<AreasResponse> getAreas() async => AreasResponse([]); }

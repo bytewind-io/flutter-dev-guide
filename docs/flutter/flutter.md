@@ -177,7 +177,7 @@ class BasePaginationRequest {
 ## Быстрый старт
 
 1. Добавь репозиторий стандартов как submodule или subtree
-2. Используй шаблон правила из `docs/templates/rule-template.md`
+2. Используй шаблон правила из `docs/templates-docs/rule-template.md`
 3. Примеры кода кладём в `docs/examples/{good|bad}` и включаем в правило
 
 ## Интеграция с проектами
@@ -210,6 +210,6 @@ git subtree add --prefix=docs/standards <repo-url> main --squash
 ## Ссылки
 
 - [Правила Dart](../rules/dart/)
-- [Шаблоны](../templates/)
+- [Шаблоны](../templates-docs/)
 - [Примеры](../examples/)
 - [Маппинг правил](../mappings/)

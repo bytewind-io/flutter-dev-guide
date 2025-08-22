@@ -28,29 +28,8 @@ ai_hint: >
 
 ## Плохо
 
-```dart title="docs/examples/bad/bad-enum-parse-001.dart"
-
-
-class User {
-  const User({
-    required this.name,
-    required this.role, // ❌ int вместо enum
-  });
-
-  final String name;
-  final int role; // ❌ магическое число
-
-  bool get isAdmin => role == 1; // ❌ хардкод числа
-  bool get isModerator => role == 2; // ❌ хардкод числа
-  bool get isUser => role == 3; // ❌ хардкод числа
-
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      name: json['name'] as String,
-      role: json['role'] as int, // ❌ нет валидации
-    );
-  }
-}
+```dart
+--8<-- "docs/examples/bad/bad-enum-parse-001.dart"
 ```
 
 **Проблемы:**
@@ -61,44 +40,8 @@ class User {
 
 ## Хорошо
 
-```dart:docs/examples/good/good-enum-parse-001.dart
-enum UserRole {
-  user(1),
-  moderator(2),
-  admin(3);
-
-  const UserRole(this.value);
-  final int value;
-
-  static UserRole? fromValue(int? raw) {
-    if (raw == null) return null;
-    for (final e in UserRole.values) {
-      if (e.value == raw) return e;
-    }
-    return null; // ✅ безопасно для неизвестных значений
-  }
-}
-
-class User {
-  const User({
-    required this.name,
-    required this.role,
-  });
-
-  final String name;
-  final UserRole role; // ✅ enum вместо int
-
-  bool get isAdmin => role == UserRole.admin; // ✅ читаемо и безопасно
-  bool get isModerator => role == UserRole.moderator;
-  bool get isUser => role == UserRole.user;
-
-  factory User.fromJson(Map<String, dynamic> json) {
-    return User(
-      name: json['name'] as String,
-      role: UserRole.fromValue(json['role'] as int?) ?? UserRole.user, // ✅ безопасный парсинг
-    );
-  }
-}
+```dart
+--8<-- "docs/examples/good/good-enum-parse-001.dart"
 ```
 
 **Преимущества:**
@@ -112,45 +55,13 @@ class User {
 ### Создание enum с числовыми значениями
 
 ```dart
-enum OrderStatus {
-  pending(0),
-  confirmed(1),
-  shipped(2),
-  delivered(3),
-  cancelled(4);
-
-  const OrderStatus(this.value);
-  final int value;
-
-  static OrderStatus? fromValue(int? raw) {
-    if (raw == null) return null;
-    for (final e in OrderStatus.values) {
-      if (e.value == raw) return e;
-    }
-    return null;
-  }
-}
+--8<-- "docs/examples/good/good-enum-parse-002.dart"
 ```
 
 ### Использование в модели
 
 ```dart
-class Order {
-  final String id;
-  final OrderStatus status;
-
-  const Order({required this.id, required this.status});
-
-  bool get isCompleted => status == OrderStatus.delivered;
-  bool get canCancel => status == OrderStatus.pending || status == OrderStatus.confirmed;
-
-  factory Order.fromJson(Map<String, dynamic> json) {
-    return Order(
-      id: json['id'] as String,
-      status: OrderStatus.fromValue(json['status'] as int?) ?? OrderStatus.pending,
-    );
-  }
-}
+--8<-- "docs/examples/good/good-enum-parse-003.dart"
 ```
 
 ## Проверка правила

@@ -29,24 +29,8 @@ ai_hint: >
 
 ## Плохо
 
-```dart title="docs/examples/bad/bad-strict-ctor-001.dart"
-
-class User {
-  const User({
-    this.id, // ❌ отсутствует required
-    required this.name,
-    this.email, // ❌ отсутствует required
-  });
-
-  final String? id;
-  final String name;
-  final String? email;
-
-  // ❌ Можно случайно забыть передать поля
-  static User create(String name) {
-    return User(name: name); // id и email будут null
-  }
-}
+```dart
+--8<-- "docs/examples/bad/bad-strict-ctor-001.dart"
 ```
 
 **Проблемы:**
@@ -57,36 +41,8 @@ class User {
 
 ## Хорошо
 
-```dart:docs/examples/good/good-strict-ctor-001.dart
-class User {
-  const User({
-    required this.id, // ✅ required для nullable поля
-    required this.name,
-    required this.email, // ✅ required для nullable поля
-  });
-
-  final String? id;
-  final String name;
-  final String? email;
-
-  // ✅ Явно указываем все поля, включая null
-  static User create(String name) {
-    return User(
-      id: null, // ✅ явно передаем null
-      name: name,
-      email: null, // ✅ явно передаем null
-    );
-  }
-
-  // ✅ Factory для создания с id
-  factory User.withId(String id, String name, String? email) {
-    return User(
-      id: id,
-      name: name,
-      email: email,
-    );
-  }
-}
+```dart
+--8<-- "docs/examples/good/good-strict-ctor-001.dart"
 ```
 
 **Преимущества:**
@@ -100,66 +56,13 @@ class User {
 ### Строгий конструктор для nullable полей
 
 ```dart
-class Product {
-  const Product({
-    required this.id,
-    required this.name,
-    required this.description, // nullable, но required
-    required this.price,
-    required this.category,
-    required this.tags, // nullable, но required
-  });
-
-  final String id;
-  final String name;
-  final String? description;
-  final double price;
-  final ProductCategory category;
-  final List<String>? tags;
-
-  // ✅ Явно передаем null для nullable полей
-  static Product createBasic(String id, String name, double price, ProductCategory category) {
-    return Product(
-      id: id,
-      name: name,
-      description: null, // ✅ явно null
-      price: price,
-      category: category,
-      tags: null, // ✅ явно null
-    );
-  }
-}
+--8<-- "docs/examples/good/good-strict-ctor-002.dart"
 ```
 
 ### Строгий конструктор для enum полей
 
 ```dart
-class Order {
-  const Order({
-    required this.id,
-    required this.status,
-    required this.items,
-    required this.total,
-    required this.shippingAddress, // nullable, но required
-  });
-
-  final String id;
-  final OrderStatus status;
-  final List<OrderItem> items;
-  final double total;
-  final Address? shippingAddress;
-
-  // ✅ Factory с явной передачей null
-  factory Order.create(String id, List<OrderItem> items, double total) {
-    return Order(
-      id: id,
-      status: OrderStatus.pending,
-      items: items,
-      total: total,
-      shippingAddress: null, // ✅ явно null
-    );
-  }
-}
+--8<-- "docs/examples/good/good-strict-ctor-003.dart"
 ```
 
 ## Проверка правила
