@@ -134,5 +134,21 @@
     "coverage": "ai",
     "bad_snippet": "docs/examples/bad/bad-import-implementation-001.dart",
     "good_snippet": "docs/examples/good/good-import-abstraction-001.dart"
+  },
+  {
+    "id": "ARCH-DS-NO-DIRECT-ACCESS",
+    "title": "UI и BLoC не обращаются к Firebase/SQLite/HTTP напрямую",
+    "category": "architecture/datasource",
+    "severity": "error",
+    "tags": [
+      "clean-architecture",
+      "repository",
+      "separation-of-concerns",
+      "dependency-inversion"
+    ],
+    "linter_rule": null,
+    "coverage": "ai",
+    "bad_snippet": "docs/examples/bad/bad-repo-direct-access-001.dart",
+    "good_snippet": "docs/examples/good/good-repo-direct-access-001.dart"
   }
 ]
