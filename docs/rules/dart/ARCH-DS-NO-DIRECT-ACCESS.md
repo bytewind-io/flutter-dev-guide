@@ -115,12 +115,14 @@ message: >
   Слои UI/Presentation (включая BLoC/Cubit) не должны импортировать SDK источников данных
   и не должны напрямую вызывать сетевые/БД/хранилищные API. Вынесите доступ к данным
   за интерфейсы (Repository/Gateway/UseCase) в data/infra слой и внедряйте зависимости через DI.
+  ВНИМАНИЕ: создание доменных объектов (Filter, Model, Entity) НЕ является нарушением.
 
 autofix:
   suggestion_builder: minimal
   suggestion: >
-    Перенесите прямые обращения к Firebase/HTTP/БД в data/infra (repository/api/datasource),
-    а в UI/BLoC используйте абстракции (интерфейсы) и DI. Для потоков — применяйте use-case/gateway.
+    Проверьте, действительно ли это прямой доступ к данным. Создание объектов Filter/Model допустимо.
+    Если это прямой доступ: перенесите обращения к Firebase/HTTP/БД в data/infra (repository/api/datasource),
+    а в UI/BLoC используйте абстракции (интерфейсы) и DI.
 
 linter_rule:
   coverage: ai
@@ -132,7 +134,9 @@ ai_hint: >
   3) Нарушение, если в допустимом для проверки файле обнаружены import из disallowed_imports
      ИЛИ вызовы из disallowed_calls.
   4) Игнорируй утилиты потоков и инфраструктуру BLoC (см. allowlist_imports).
-  5) Не предлагай фикс, если файл в data/api/network — это корректный слой для SDK.
+  5) КРИТИЧНО: НЕ флагируй создание доменных объектов (Filter, Model, Entity классы) - это НЕ прямой доступ к данным.
+  6) РАЗРЕШЕНО: FetchThingsFilter(), TagThingsFilter() и подобные - это параметры для репозитория, НЕ прямой доступ.
+  7) Не предлагай фикс, если файл в data/api/network — это корректный слой для SDK.
 
 bad_snippet: docs/examples/bad/bad-datasource-in-bloc-001.dart
 good_snippet: docs/examples/good/good-datasource-in-bloc-001.dart
@@ -239,6 +243,35 @@ tests:
         class HomeBloc extends Bloc<int, int> {
           HomeBloc(): super(0) {
             on<int>((e, emit) => emit(state + 1), transformer: debounceSwitchMap(const Duration(milliseconds: 300)));
+          }
+        }
+
+    - path: "lib/module/home/bloc/home_bloc.dart"
+      content: |
+        import 'package:bloc/bloc.dart';
+        import '../../repository/things_repository/fetch_filter.dart';
+        import '../../repository/things_repository/thing_repository.dart';
+        
+        class HomeBloc extends Bloc<HomeEvent, HomeState> {
+          HomeBloc({required ThingRepositoryI thingRepository})
+              : _thingRepository = thingRepository,
+                super(const HomeState());
+        
+          final ThingRepositoryI _thingRepository;
+        
+          void _applyTagFilters(Set<String> tagIds) {
+            // ✅ Создание доменных фильтров - это правильно
+            FetchThingsFilter filter;
+            if (tagIds.isEmpty) {
+              filter = const EmptyThingsFilter();
+            } else if (tagIds.length == 1) {
+              filter = TagThingsFilter(tagId: tagIds.first);
+            } else {
+              filter = MultipleTagsThingsFilter(tagIds: tagIds);
+            }
+            
+            // ✅ Использование репозитория через интерфейс - это правильно
+            _thingRepository.fetch(filter);
           }
         }
 
