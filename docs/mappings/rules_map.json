@@ -150,5 +150,22 @@
     "coverage": "ai",
     "bad_snippet": "docs/examples/bad/bad-repo-direct-access-001.dart",
     "good_snippet": "docs/examples/good/good-repo-direct-access-001.dart"
+  },
+  {
+    "id": "DART-I18N-NO-HARDCODED-TEXT",
+    "title": "Используй локализацию вместо хардкод текста",
+    "category": "dart/i18n",
+    "severity": "warning",
+    "tags": [
+      "internationalization",
+      "localization",
+      "hardcoded-text",
+      "user-facing-text",
+      "strings"
+    ],
+    "linter_rule": null,
+    "coverage": "ai",
+    "bad_snippet": "docs/examples/bad/bad-hardcoded-text-001.dart",
+    "good_snippet": "docs/examples/good/good-hardcoded-text-001.dart"
   }
 ]
