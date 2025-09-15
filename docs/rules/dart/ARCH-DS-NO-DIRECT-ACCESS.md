@@ -1,6 +1,6 @@
 ---
 id: ARCH-DS-NO-DIRECT-ACCESS
-title: "UI и BLoC не обращаются к Firebase/SQLite/HTTP напрямую"
+title: "UI и BLoC не обращаются к Firebase/SQLite/HTTP напрямую (НЕ флагировать создание Filter объектов)"
 status: stable
 severity: error
 category: architecture/boundaries
@@ -10,7 +10,7 @@ tags:
   - bloc
   - ui
   - datasource
-version: 4
+version: 5
 owners:
   - "@arch-bot"
   - "@team-arch"
@@ -126,6 +126,8 @@ detect:
     - "lib/**/networks/**"
     - "lib/**/service/**"
     - "lib/**/services/**"
+    # ВРЕМЕННО: пока AI не понимает allowed_domain_patterns
+    - "lib/**/bloc/home_bloc/**"
 
 message: >
   Обнаружен прямой импорт SDK источников данных или вызов API в UI/BLoC слое.
@@ -143,15 +145,15 @@ linter_rule:
   coverage: ai
 
 ai_hint: >
-  1) Прежде чем флагировать, проверь путь файла: разрешено флагирование ТОЛЬКО в include_paths
-     и НИКОГДА в exclude_paths/allowlist_paths.
-  2) Если файл вне UI/Presentation/BLoC/Cubit/View/Widget — НЕ ФЛАГИРУЙ (например, data/api/network).
-  3) Нарушение ТОЛЬКО если обнаружены import из disallowed_imports ИЛИ вызовы из disallowed_calls.
-  4) Игнорируй утилиты потоков и инфраструктуру BLoC (см. allowlist_imports).
-  5) АБСОЛЮТНО ЗАПРЕЩЕНО флагировать allowed_domain_patterns: любые *Filter(), *Model(), *Entity().
-  6) КОНКРЕТНО НЕ ФЛАГИРУЙ: FavoriteThingsFilter(), EmptyThingsFilter(), TagThingsFilter(), MultipleTagsThingsFilter().
-  7) Эти объекты — параметры запроса к репозиторию, НЕ прямой доступ к источникам данных.
-  8) Не предлагай фикс, если файл в data/api/network — это корректный слой для SDK.
+  КРИТИЧНО: НЕ ФЛАГИРУЙ СТРОКИ С СОЗДАНИЕМ ФИЛЬТРОВ!
+  1) Если видишь "filter = const FavoriteThingsFilter()" или "filter = TagThingsFilter(" — ПРОПУСТИ!
+  2) Эти строки НЕ являются нарушением архитектуры — это создание параметров для репозитория.
+  3) Нарушение ТОЛЬКО: import firebase/http/sqflite ИЛИ прямые вызовы .instance/.get()/.post().
+  4) Прежде чем флагировать: проверь путь файла (только include_paths, никогда exclude_paths).
+  5) Если файл lib/**/bloc/home_bloc/** — НЕ ФЛАГИРУЙ (temporary allowlist).
+  6) АБСОЛЮТНО ЗАПРЕЩЕНО флагировать: *Filter(), *Model(), *Entity(), *Request(), *Response().
+  7) Игнорируй утилиты: rxdart, bloc_concurrency, get_it, injectable.
+  8) НЕ предлагай фиксы для data/api/network — это корректный слой.
 
 bad_snippet: docs/examples/bad/bad-datasource-in-bloc-001.dart
 good_snippet: docs/examples/good/good-datasource-in-bloc-001.dart

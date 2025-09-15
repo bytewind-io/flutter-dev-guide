@@ -137,7 +137,7 @@
   },
   {
     "id": "ARCH-DS-NO-DIRECT-ACCESS",
-    "title": "UI и BLoC не обращаются к Firebase/SQLite/HTTP напрямую",
+    "title": "UI и BLoC не обращаются к Firebase/SQLite/HTTP напрямую (НЕ флагировать создание Filter объектов)",
     "category": "architecture/datasource",
     "severity": "error",
     "tags": [
