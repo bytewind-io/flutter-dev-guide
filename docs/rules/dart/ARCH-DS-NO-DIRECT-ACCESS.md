@@ -84,6 +84,22 @@ detect:
     - "Isar.open("
     - "Hive.openBox("
 
+  # КРИТИЧНО: Разрешённые паттерны для доменных объектов
+  allowed_domain_patterns:
+    # Фильтры для репозиториев (параметры запросов)
+    - ".*Filter\\("
+    - ".*ThingsFilter\\("
+    - "FavoriteThingsFilter\\("
+    - "EmptyThingsFilter\\("
+    - "TagThingsFilter\\("
+    - "MultipleTagsThingsFilter\\("
+    - "TextSearchThingsFilter\\("
+    # Доменные модели и entities
+    - ".*Model\\("
+    - ".*Entity\\("
+    - ".*Request\\("
+    - ".*Response\\("
+
   # Явно разрешаем инфраструктурные утилиты презентационного слоя,
   # чтобы исключить ложные срабатывания.
   allowlist_imports:
@@ -112,17 +128,16 @@ detect:
     - "lib/**/services/**"
 
 message: >
-  Слои UI/Presentation (включая BLoC/Cubit) не должны импортировать SDK источников данных
-  и не должны напрямую вызывать сетевые/БД/хранилищные API. Вынесите доступ к данным
-  за интерфейсы (Repository/Gateway/UseCase) в data/infra слой и внедряйте зависимости через DI.
-  ВНИМАНИЕ: создание доменных объектов (Filter, Model, Entity) НЕ является нарушением.
+  Обнаружен прямой импорт SDK источников данных или вызов API в UI/BLoC слое.
+  Проверьте: если это создание доменных объектов (*Filter, *Model, *Entity) - это НЕ нарушение.
+  Нарушение только при прямых вызовах Firebase.instance, http.get(), sqflite и подобных.
+  Вынесите реальный доступ к данным в data/infra слой через Repository интерфейсы.
 
 autofix:
   suggestion_builder: minimal
   suggestion: >
-    Проверьте, действительно ли это прямой доступ к данным. Создание объектов Filter/Model допустимо.
-    Если это прямой доступ: перенесите обращения к Firebase/HTTP/БД в data/infra (repository/api/datasource),
-    а в UI/BLoC используйте абстракции (интерфейсы) и DI.
+    ВНИМАНИЕ: Создание объектов FavoriteThingsFilter(), TagThingsFilter() - это НЕ нарушение!
+    Это доменные объекты-параметры для репозитория. Игнорируйте это предупреждение, если видите только создание *Filter().
 
 linter_rule:
   coverage: ai
@@ -131,12 +146,12 @@ ai_hint: >
   1) Прежде чем флагировать, проверь путь файла: разрешено флагирование ТОЛЬКО в include_paths
      и НИКОГДА в exclude_paths/allowlist_paths.
   2) Если файл вне UI/Presentation/BLoC/Cubit/View/Widget — НЕ ФЛАГИРУЙ (например, data/api/network).
-  3) Нарушение, если в допустимом для проверки файле обнаружены import из disallowed_imports
-     ИЛИ вызовы из disallowed_calls.
+  3) Нарушение ТОЛЬКО если обнаружены import из disallowed_imports ИЛИ вызовы из disallowed_calls.
   4) Игнорируй утилиты потоков и инфраструктуру BLoC (см. allowlist_imports).
-  5) КРИТИЧНО: НЕ флагируй создание доменных объектов (Filter, Model, Entity классы) - это НЕ прямой доступ к данным.
-  6) РАЗРЕШЕНО: FetchThingsFilter(), TagThingsFilter() и подобные - это параметры для репозитория, НЕ прямой доступ.
-  7) Не предлагай фикс, если файл в data/api/network — это корректный слой для SDK.
+  5) АБСОЛЮТНО ЗАПРЕЩЕНО флагировать allowed_domain_patterns: любые *Filter(), *Model(), *Entity().
+  6) КОНКРЕТНО НЕ ФЛАГИРУЙ: FavoriteThingsFilter(), EmptyThingsFilter(), TagThingsFilter(), MultipleTagsThingsFilter().
+  7) Эти объекты — параметры запроса к репозиторию, НЕ прямой доступ к источникам данных.
+  8) Не предлагай фикс, если файл в data/api/network — это корректный слой для SDK.
 
 bad_snippet: docs/examples/bad/bad-datasource-in-bloc-001.dart
 good_snippet: docs/examples/good/good-datasource-in-bloc-001.dart
