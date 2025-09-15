@@ -67,6 +67,10 @@ class RuleChecker:
         elif rule_id == "ARCH-REPO-STATELESS":
             violations.extend(self._check_repo_stateless(content, file_path))
         
+        # Проверка правила DART-I18N-NO-HARDCODED-TEXT
+        elif rule_id == "DART-I18N-NO-HARDCODED-TEXT":
+            violations.extend(self._check_no_hardcoded_text(content, file_path))
+        
         return violations
     
     def _check_no_direct_access(self, content: str, file_path: str) -> List[str]:
@@ -116,6 +120,55 @@ class RuleChecker:
             for i, line in enumerate(lines, 1):
                 if re.search(r'void\s+init|void\s+setup|Future<void>\s+init|Future<void>\s+setup', line):
                     violations.append(f"  Строка {i}: Репозиторий содержит метод init/setup")
+        
+        return violations
+    
+    def _check_no_hardcoded_text(self, content: str, file_path: str) -> List[str]:
+        """Проверяет правило DART-I18N-NO-HARDCODED-TEXT."""
+        violations = []
+        
+        # Проверяем только UI слои
+        ui_path_patterns = [
+            'ui/', 'presentation/', 'widget/', 'widgets/', 
+            'view/', 'views/', 'page/', 'pages/', 
+            'screen/', 'screens/'
+        ]
+        
+        # Проверяем, что файл находится в UI слое
+        if not any(pattern in file_path for pattern in ui_path_patterns):
+            return violations
+        
+        # Исключаем определенные папки
+        exclude_patterns = [
+            'data/', 'infra/', 'network/', 'api/', 
+            'constants/', 'config/', 'test/', 'integration_test/'
+        ]
+        
+        if any(pattern in file_path for pattern in exclude_patterns):
+            return violations
+        
+        # Паттерны для поиска хардкод текста с не-ASCII символами
+        hardcode_patterns = [
+            (r'Text\s*\(\s*[\'"][^\'\"]*[А-Яа-яЁё\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\u0600-\u06ff\u0590-\u05ff\u0100-\u017f\u1e00-\u1eff\u0370-\u03ff\u0400-\u04ff][^\'\"]*[\'"]', 'Хардкод текста в Text виджете'),
+            (r'label\s*:\s*[\'"][^\'\"]*[А-Яа-яЁё\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\u0600-\u06ff\u0590-\u05ff\u0100-\u017f\u1e00-\u1eff\u0370-\u03ff\u0400-\u04ff][^\'\"]*[\'"]', 'Хардкод текста в label'),
+            (r'title\s*:\s*[\'"][^\'\"]*[А-Яа-яЁё\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\u0600-\u06ff\u0590-\u05ff\u0100-\u017f\u1e00-\u1eff\u0370-\u03ff\u0400-\u04ff][^\'\"]*[\'"]', 'Хардкод текста в title'),
+            (r'hintText\s*:\s*[\'"][^\'\"]*[А-Яа-яЁё\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\u0600-\u06ff\u0590-\u05ff\u0100-\u017f\u1e00-\u1eff\u0370-\u03ff\u0400-\u04ff][^\'\"]*[\'"]', 'Хардкод текста в hintText'),
+            (r'tooltip\s*:\s*[\'"][^\'\"]*[А-Яа-яЁё\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\u0600-\u06ff\u0590-\u05ff\u0100-\u017f\u1e00-\u1eff\u0370-\u03ff\u0400-\u04ff][^\'\"]*[\'"]', 'Хардкод текста в tooltip'),
+        ]
+        
+        lines = content.split('\n')
+        for i, line in enumerate(lines, 1):
+            # Пропускаем строки с интерполяцией, логированием и техническими строками
+            if any(pattern in line for pattern in ['${', 'print(', 'log(', 'debugPrint(', 'static const String', 'assets/', 'http://', 'https://', 'ftp://', 'mailto:']):
+                continue
+            
+            # Проверяем наличие технических строк с подчеркиваниями
+            if re.search(r'[a-zA-Z0-9_]+_[a-zA-Z0-9_]+', line):
+                continue
+            
+            for pattern, description in hardcode_patterns:
+                if re.search(pattern, line):
+                    violations.append(f"  Строка {i}: {description} - используйте локализацию")
         
         return violations
     
