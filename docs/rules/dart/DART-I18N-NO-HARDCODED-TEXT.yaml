@@ -83,6 +83,12 @@ detect:
     - "mailto:"
     # Технические строки (ключи, ID)
     - "[a-zA-Z0-9_]+_[a-zA-Z0-9_]+"
+    # Правильное использование локализации
+    - "S\\.of\\("
+    - "AppLocalizations\\.of\\("
+    - "context\\.l10n\\."
+    - "\\.tr\\(\\)"
+    - "Intl\\."
 
 message: >
   Обнаружен хардкод текста на пользовательском интерфейсе. Используйте систему локализации 
@@ -105,7 +111,8 @@ ai_hint: >
   3) НЕ флагируй: интерполированные строки (${}), логирование, константы, asset пути, URLs.
   4) НЕ флагируй: технические строки с подчёркиваниями, ключи API, ID.
   5) НЕ флагируй: строки только из ASCII символов (английский текст пока допустим).
-  6) Фокусируйся на пользовательских текстах, которые должны переводиться.
+  6) КРИТИЧНО: НЕ флагируй правильное использование локализации: S.of(context), AppLocalizations.of(context), context.l10n, .tr(), Intl.
+  7) Фокусируйся на пользовательских текстах, которые должны переводиться.
 
 bad_snippet: docs/examples/bad/bad-hardcoded-text-001.dart
 good_snippet: docs/examples/good/good-hardcoded-text-001.dart
@@ -193,4 +200,19 @@ tests:
         void logError(String message) {
           print('Error occurred: $message');
           debugPrint('Debug info: некоторая информация');
+        }
+    
+    - path: "lib/widgets/tag_widget.dart"
+      content: |
+        import 'package:flutter/material.dart';
+        import '../generated/l10n.dart';
+        
+        class TagWidget extends StatelessWidget {
+          @override
+          Widget build(BuildContext context) {
+            final tag = getTag();
+            return Text(
+              tag?.name ?? S.of(context).unknown,
+            );
+          }
         }

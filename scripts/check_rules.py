@@ -162,6 +162,10 @@ class RuleChecker:
             if any(pattern in line for pattern in ['${', 'print(', 'log(', 'debugPrint(', 'static const String', 'assets/', 'http://', 'https://', 'ftp://', 'mailto:']):
                 continue
             
+            # Пропускаем правильное использование локализации
+            if any(pattern in line for pattern in ['S.of(', 'AppLocalizations.of(', 'context.l10n.', '.tr()', 'Intl.']):
+                continue
+            
             # Проверяем наличие технических строк с подчеркиваниями
             if re.search(r'[a-zA-Z0-9_]+_[a-zA-Z0-9_]+', line):
                 continue
