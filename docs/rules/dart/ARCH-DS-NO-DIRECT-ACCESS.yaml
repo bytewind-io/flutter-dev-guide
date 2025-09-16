@@ -99,6 +99,19 @@ detect:
     - "package:injectable/injectable.dart"
     - "dart:async"
 
+  # Разрешаем вызовы методов репозитория (Clean Architecture)
+  allowlist_calls:
+    - "_repository.fetch("
+    - "_tagRepository.fetch("
+    - "_thingRepository.fetch("
+    - "_filterRepository.getDistinctValues("
+    - "_repository.delete("
+    - "_repository.save("
+    - "repository.fetch("
+    - "repository.delete("
+    - "repository.save("
+    - "GetIt.I<"
+
   # Дополнительная страховка: даже если scope будет проигнорирован,
   # эти пути считаем безопасными и не флагируем.
   allowlist_paths:
@@ -132,19 +145,23 @@ linter_rule:
   coverage: ai
 
 ai_hint: >
-  КРИТИЧНО: Различай ПРАВИЛЬНУЮ Clean Architecture от НАРУШЕНИЙ!
+  ⚠️ КРИТИЧНО: НЕ ФЛАГИРУЙ КОРРЕКТНУЮ CLEAN ARCHITECTURE!
   
-  ✅ НЕ ФЛАГИРУЙ (это Clean Architecture):
-  1) repository.fetch() - вызов ИНТЕРФЕЙСА репозитория
-  2) *Filter(), *Model(), *Entity() - создание доменных объектов-параметров
-  3) GetIt.I, @Injectable - Dependency Injection
-  4) Файлы в lib/network/**, lib/data/** - правильные слои для SDK
+  ✅ ЭТО ПРАВИЛЬНО - НЕ ФЛАГИРУЙ:
+  • _tagRepository.fetch() - вызов интерфейса TagRepositoryI через DI
+  • _thingRepository.fetch() - вызов интерфейса ThingRepositoryI  
+  • SearchByTextTagsFilter(), FavoriteThingsFilter() - доменные объекты
+  • GetIt.I<TagRepositoryI>() - Dependency Injection
+  • @Injectable - DI аннотация
+  • repository.delete(), repository.save() - методы интерфейса
   
-  ❌ ФЛАГИРУЙ ТОЛЬКО реальные нарушения:
-  1) ПРЯМЫЕ вызовы SDK: FirebaseFirestore.instance, http.get(), SharedPreferences.getInstance()
-  2) ИМПОРТЫ SDK в UI/BLoC: import 'package:cloud_firestore/cloud_firestore.dart'
+  ❌ ФЛАГИРУЙ ТОЛЬКО ПРЯМЫЕ SDK ВЫЗОВЫ:
+  • FirebaseFirestore.instance.collection() - ПРЯМОЙ Firebase
+  • http.get(), http.post() - ПРЯМОЙ HTTP
+  • SharedPreferences.getInstance() - ПРЯМОЕ хранилище
+  • import 'package:cloud_firestore/cloud_firestore.dart' в UI/BLoC
   
-  НЕ путай _repository.fetch(Filter()) с прямым доступом к данным!
+  ПРАВИЛО: _repository.ЛЮБОЙ_МЕТОД() = ПРАВИЛЬНО! Firebase.instance = НАРУШЕНИЕ!
 
 bad_snippet: docs/examples/bad/bad-datasource-in-bloc-001.dart
 good_snippet: docs/examples/good/good-datasource-in-bloc-001.dart
