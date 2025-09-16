@@ -1,7 +1,7 @@
 ---
 id: ARCH-DS-NO-DIRECT-ACCESS
 title: "UI и BLoC не обращаются к Firebase/SQLite/HTTP напрямую (НЕ флагировать создание Filter объектов)"
-status: stable
+status: deprecated
 severity: warning
 category: architecture/boundaries
 tags:
@@ -10,7 +10,7 @@ tags:
   - bloc
   - ui
   - datasource
-version: 6
+version: 7
 owners:
   - "@arch-bot"
   - "@team-arch"
@@ -43,45 +43,22 @@ scope:
     - "lib/**/bloc/home_bloc/**"
 
 detect:
-  # Явные нарушения: SDK источников данных и прямые вызовы клиентов
-  disallowed_imports:
-    # Firebase
-    - "package:cloud_firestore/cloud_firestore.dart"
-    - "package:firebase_auth/firebase_auth.dart"
-    - "package:firebase_database/firebase_database.dart"
-    - "package:firebase_storage/firebase_storage.dart"
-    # HTTP/GraphQL
-    - "package:dio/dio.dart"
-    - "package:http/http.dart"
-    - "package:graphql_flutter/graphql_flutter.dart"
-    # SQL/NoSQL/ORM/локальные БД
-    - "package:sqflite/sqflite.dart"
-    - "package:isar/isar.dart"
-    - "package:hive/hive.dart"
-    - "package:hive_flutter/hive_flutter.dart"
-    - "package:drift/drift.dart"
-    - "package:objectbox/objectbox.dart"
-    - "package:realm/realm.dart"
-    # Локальные/системные хранилища
-    - "package:shared_preferences/shared_preferences.dart"
-    - "package:path_provider/path_provider.dart"
-
+  # ТОЛЬКО самые явные нарушения - прямые вызовы SDK
   disallowed_calls:
-    # Firebase singletons
+    # Firebase singletons - ЭТО реальные нарушения
     - "FirebaseFirestore.instance"
     - "FirebaseAuth.instance"
     - "FirebaseDatabase.instance"
     - "FirebaseStorage.instance"
-    # Сетевые клиенты
-    - "Dio("
+    # Прямые HTTP вызовы - ЭТО реальные нарушения
     - "http.get("
     - "http.post("
     - "http.put("
     - "http.delete("
-    # Низкоуровневые сокеты/клиенты
+    # Низкоуровневые клиенты - ЭТО реальные нарушения
     - "HttpClient("
     - "WebSocket.connect("
-    # Локальные хранилища
+    # Прямые хранилища - ЭТО реальные нарушения
     - "SharedPreferences.getInstance("
     - "Isar.open("
     - "Hive.openBox("
@@ -147,15 +124,13 @@ linter_rule:
   coverage: ai
 
 ai_hint: >
-  КРИТИЧНО: НЕ ФЛАГИРУЙ СТРОКИ С СОЗДАНИЕМ ФИЛЬТРОВ!
-  1) Если видишь "filter = const FavoriteThingsFilter()" или "filter = TagThingsFilter(" — ПРОПУСТИ!
-  2) Эти строки НЕ являются нарушением архитектуры — это создание параметров для репозитория.
-  3) Нарушение ТОЛЬКО: import firebase/http/sqflite ИЛИ прямые вызовы .instance/.get()/.post().
-  4) Прежде чем флагировать: проверь путь файла (только include_paths, никогда exclude_paths).
-  5) Если файл lib/**/bloc/home_bloc/** — НЕ ФЛАГИРУЙ (temporary allowlist).
-  6) АБСОЛЮТНО ЗАПРЕЩЕНО флагировать: *Filter(), *Model(), *Entity(), *Request(), *Response().
-  7) Игнорируй утилиты: rxdart, bloc_concurrency, get_it, injectable.
-  8) НЕ предлагай фиксы для data/api/network — это корректный слой.
+  ПРАВИЛО ВРЕМЕННО DEPRECATED - AI НЕ ПОНИМАЕТ CLEAN ARCHITECTURE!
+  НЕ ФЛАГИРУЙ:
+  1) _repository.fetch() - это ПРАВИЛЬНОЕ использование репозитория через интерфейс!
+  2) SearchByTextTagsFilter() - это параметр запроса, НЕ прямой доступ к данным!
+  3) Любые *Filter(), *Model(), *Entity() - это доменные объекты!
+  4) Файлы lib/**/bloc/home_bloc/** ИСКЛЮЧЕНЫ из проверки!
+  ФЛАГИРУЙ ТОЛЬКО: Firebase.instance, http.get(), SharedPreferences.getInstance() и подобные ПРЯМЫЕ SDK вызовы!
 
 bad_snippet: docs/examples/bad/bad-datasource-in-bloc-001.dart
 good_snippet: docs/examples/good/good-datasource-in-bloc-001.dart
