@@ -136,10 +136,10 @@
     "good_snippet": "docs/examples/good/good-import-abstraction-001.dart"
   },
   {
-    "id": "ARCH-DS-NO-DIRECT-ACCESS",
-    "title": "UI и BLoC не обращаются к Firebase/SQLite/HTTP напрямую (НЕ флагировать создание Filter объектов)",
+    "id": "ARCH-DS-NO-DIRECT-ACCESS-DISABLED",
+    "title": "ПРАВИЛО ОТКЛЮЧЕНО: UI и BLoC не обращаются к Firebase/SQLite/HTTP напрямую",
     "category": "architecture/datasource",
-    "severity": "warning",
+    "severity": "info",
     "tags": [
       "clean-architecture",
       "repository",

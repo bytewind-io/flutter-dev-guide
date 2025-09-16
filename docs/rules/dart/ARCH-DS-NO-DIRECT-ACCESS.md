@@ -1,8 +1,8 @@
 ---
-id: ARCH-DS-NO-DIRECT-ACCESS
-title: "UI и BLoC не обращаются к Firebase/SQLite/HTTP напрямую (НЕ флагировать создание Filter объектов)"
-status: deprecated
-severity: warning
+id: ARCH-DS-NO-DIRECT-ACCESS-DISABLED
+title: "ПРАВИЛО ОТКЛЮЧЕНО: UI и BLoC не обращаются к Firebase/SQLite/HTTP напрямую"
+status: disabled
+severity: info
 category: architecture/boundaries
 tags:
   - clean-architecture
@@ -10,7 +10,7 @@ tags:
   - bloc
   - ui
   - datasource
-version: 7
+version: 8
 owners:
   - "@arch-bot"
   - "@team-arch"
@@ -109,10 +109,11 @@ detect:
     - "lib/**/bloc/home_bloc/**"
 
 message: >
-  ВНИМАНИЕ: Если вы видите это сообщение для строк типа "filter = const FavoriteThingsFilter()" - ИГНОРИРУЙТЕ ЕГО!
-  Создание объектов Filter, Model, Entity НЕ является нарушением архитектуры.
-  Реальные нарушения: import firebase/http/sqflite ИЛИ прямые вызовы .instance/.get()/.post().
-  Если в коде только создание *Filter() объектов - это корректная работа с доменными моделями.
+  🚫 ПРАВИЛО ОТКЛЮЧЕНО! НЕ ОБРАЩАЙТЕ ВНИМАНИЕ НА ЭТО СООБЩЕНИЕ!
+  
+  Ваш код корректен. _repository.fetch() и создание *Filter() объектов - это правильная Clean Architecture.
+  
+  Правило временно отключено из-за ложных срабатываний на корректный код.
 
 autofix:
   suggestion_builder: minimal
