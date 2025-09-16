@@ -1,8 +1,8 @@
 ---
-id: ARCH-DS-NO-DIRECT-ACCESS-DISABLED
-title: "ПРАВИЛО ОТКЛЮЧЕНО: UI и BLoC не обращаются к Firebase/SQLite/HTTP напрямую"
-status: disabled
-severity: info
+id: ARCH-DS-NO-DIRECT-ACCESS
+title: "UI и BLoC не обращаются к Firebase/SQLite/HTTP напрямую"
+status: stable
+severity: error
 category: architecture/boundaries
 tags:
   - clean-architecture
