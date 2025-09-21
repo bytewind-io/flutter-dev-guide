@@ -46,6 +46,15 @@ def matches_patterns(content, patterns):
             hits.append(p['id'])
     return hits
 
+def matches_allowlist_patterns(content, allowlist_patterns):
+    """Check if content matches any allowlist pattern (should be excluded)"""
+    if not allowlist_patterns:
+        return False
+    for pattern in allowlist_patterns:
+        if re.search(pattern, content):
+            return True
+    return False
+
 def path_allowlisted(test_path, allowlist_paths):
     return any(fnmatch.fnmatch(test_path, p) for p in (allowlist_paths or []))
 
@@ -56,6 +65,10 @@ def evaluate(rule, test):
         return False  # вне области — не срабатываем
     detect = rule.get('detect', {})
     if path_allowlisted(path, detect.get('allowlist_paths')):
+        return False
+
+    # Check allowlist_patterns first - if content matches any, it should be excluded
+    if matches_allowlist_patterns(content, detect.get('allowlist_patterns')):
         return False
 
     # imports / calls / patterns

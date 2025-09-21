@@ -21,12 +21,20 @@ scope:
     - "lib/**/presentation/**"
     - "lib/**/widget/**"
     - "lib/**/widgets/**"
+    - "lib/widget/**"
+    - "lib/widgets/**"
     - "lib/**/view/**"
     - "lib/**/views/**"
+    - "lib/view/**"
+    - "lib/views/**"
     - "lib/**/page/**"
     - "lib/**/pages/**"
+    - "lib/page/**"
+    - "lib/pages/**"
     - "lib/**/screen/**"
     - "lib/**/screens/**"
+    - "lib/screen/**"
+    - "lib/screens/**"
   exclude_paths:
     - "lib/**/data/**"
     - "lib/**/infra/**"
@@ -160,6 +168,50 @@ tests:
         }
 
   should_pass:
+    - path: "lib/module/login/widget/button_basic.dart"
+      content: |
+        import 'package:flutter/material.dart';
+
+        class ButtonBasic extends StatelessWidget {
+          final String text;
+          final VoidCallback? onPressed;
+
+          const ButtonBasic({Key? key, required this.text, this.onPressed}) : super(key: key);
+
+          @override
+          Widget build(BuildContext context) {
+            return ElevatedButton(
+              onPressed: onPressed,
+              child: Container(
+                padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
+                child: Text(
+                  text,
+                  style: const TextStyle(fontSize: 16, color: Colors.white),
+                ),
+              ),
+            );
+          }
+        }
+
+    - path: "lib/module/things/thing_card/widget/create_thing_bottom_bar.dart"
+      content: |
+        import 'package:flutter/material.dart';
+        import '../generated/l10n.dart';
+
+        class CreateThingBottomBar extends StatelessWidget {
+          final VoidCallback? onDelete;
+
+          const CreateThingBottomBar({Key? key, this.onDelete}) : super(key: key);
+
+          @override
+          Widget build(BuildContext context) {
+            return CustomHorizontalButton(
+              text: S.of(context).delete,
+              onPressed: onDelete,
+            );
+          }
+        }
+
     - path: "lib/feature/profile/ui/profile_page.dart"
       content: |
         import 'package:flutter/material.dart';
