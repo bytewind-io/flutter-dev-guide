@@ -92,11 +92,11 @@ detect:
     # Технические строки (ключи, ID)
     - "[a-zA-Z0-9_]+_[a-zA-Z0-9_]+"
     # Правильное использование локализации
-    - "S\\.of\\("
-    - "AppLocalizations\\.of\\("
-    - "context\\.l10n\\."
-    - "\\.tr\\(\\)"
-    - "Intl\\."
+    - "S\\s*\\.\\s*of\\s*\\("
+    - "AppLocalizations\\s*\\.\\s*of\\s*\\("
+    - "context\\s*\\.\\s*l10n\\s*\\."
+    - "\\.tr\\s*\\("
+    - "Intl\\s*\\."
 
 message: >
   Обнаружен хардкод текста на пользовательском интерфейсе. Используйте систему локализации 
@@ -258,13 +258,31 @@ tests:
       content: |
         import 'package:flutter/material.dart';
         import '../generated/l10n.dart';
-        
+
         class TagWidget extends StatelessWidget {
           @override
           Widget build(BuildContext context) {
             final tag = getTag();
             return Text(
               tag?.name ?? S.of(context).unknown,
+            );
+          }
+        }
+
+    - path: "lib/widgets/spacing_localization.dart"
+      content: |
+        import 'package:flutter/material.dart';
+        import '../generated/l10n.dart';
+
+        class SpacingLocalizationExample extends StatelessWidget {
+          const SpacingLocalizationExample({super.key});
+
+          @override
+          Widget build(BuildContext context) {
+            return CustomHorizontalButton(
+              text:
+                  S   .of(context).delete,
+              onPressed: () {},
             );
           }
         }
