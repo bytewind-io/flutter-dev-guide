@@ -157,13 +157,29 @@ class RuleChecker:
         ]
         
         lines = content.split('\n')
+        localization_markers = [
+            'S.of(',
+            'AppLocalizations.of(',
+            'context.l10n.',
+            '.tr(',
+            'Intl.'
+        ]
+
+        def has_localization_marker(current_line: str, next_line: str = "") -> bool:
+            """Проверяет, содержит ли строка (или пара строк) признаки использования локализации."""
+            normalized_current = re.sub(r"\s+", "", current_line)
+            normalized_next = re.sub(r"\s+", "", next_line)
+            combined = normalized_current + normalized_next
+            return any(marker in normalized_current or marker in combined for marker in localization_markers)
+
         for i, line in enumerate(lines, 1):
             # Пропускаем строки с интерполяцией, логированием и техническими строками
             if any(pattern in line for pattern in ['${', 'print(', 'log(', 'debugPrint(', 'static const String', 'assets/', 'http://', 'https://', 'ftp://', 'mailto:']):
                 continue
-            
-            # Пропускаем правильное использование локализации
-            if any(pattern in line for pattern in ['S.of(', 'AppLocalizations.of(', 'context.l10n.', '.tr()', 'Intl.']):
+
+            # Пропускаем правильное использование локализации (в том числе многострочное)
+            next_line = lines[i] if i < len(lines) else ""
+            if has_localization_marker(line, next_line):
                 continue
             
             # Проверяем наличие технических строк с подчеркиваниями
