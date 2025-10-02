@@ -360,8 +360,15 @@ jobs:
             });
 
             // --- Deterministic post-filter using YAML rules (scope + detect + allowlist) ---
-            function pathInScope(file, scope) {
+            function pathInScope(file, scope, detectAllowlistPaths) {
               if (!scope) return true;
+              
+              // Проверяем detect.allowlist_paths (если файл в allowlist, пропускаем)
+              if (Array.isArray(detectAllowlistPaths) && detectAllowlistPaths.length) {
+                const inAllowlist = detectAllowlistPaths.some(p => new Minimatch(p).match(file));
+                if (inAllowlist) return false; // файл разрешен - НЕ проверяем
+              }
+              
               const inc = Array.isArray(scope.include_paths) && scope.include_paths.length
                 ? scope.include_paths.some(p => new Minimatch(p).match(file))
                 : true;
@@ -374,13 +381,36 @@ jobs:
               try { return new RegExp(str, flags || 'gmu'); } catch { try { return new RegExp(str, 'gm'); } catch { return null; } }
             }
             function buildRuleMatcher(spec) {
+              // Поддержка разных структур detect: patterns, disallowed_imports, disallowed_calls
               const pats = (spec?.detect?.patterns || []).map(p => compileRegex(p.regex, p.flags)).filter(Boolean);
-              const allow = (spec?.allowlist_patterns || []).map(s => compileRegex(s, 'u')).filter(Boolean);
+              
+              // Добавляем disallowed_imports и disallowed_calls из detect
+              const disallowedImports = (spec?.detect?.disallowed_imports || []).map(s => {
+                // Экранируем спецсимволы для точного совпадения импорта
+                const escaped = s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                return compileRegex(`import\\s+['\"]${escaped}['\"]`, 'u');
+              }).filter(Boolean);
+              const disallowedCalls = (spec?.detect?.disallowed_calls || []).map(s => {
+                const escaped = s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+                return compileRegex(escaped, 'u');
+              }).filter(Boolean);
+              
+              // Объединяем все паттерны
+              const allPats = [...pats, ...disallowedImports, ...disallowedCalls];
+              
+              // Поддержка allowlist на разных уровнях
+              const allow = [
+                ...(spec?.allowlist_patterns || []),
+                ...(spec?.detect?.allowlist_patterns || []),
+                ...(spec?.detect?.allowlist_imports || []),
+                ...(spec?.detect?.allowlist_calls || [])
+              ].map(s => compileRegex(s, 'u')).filter(Boolean);
+              
               // если нет паттернов — не блокируем вывод LLM (пропускаем)
               return (line) => {
-                if (!pats.length) return true;
+                if (!allPats.length) return true;
                 if (allow.some(re => re.test(line))) return false;
-                return pats.some(re => re.test(line));
+                return allPats.some(re => re.test(line));
               };
             }
             const matchers = new Map();
@@ -390,9 +420,15 @@ jobs:
               const ruleId = String(it.rule_id || '').trim();
               const m = matchers.get(ruleId);
               if (!m) return true; // неизвестные правила не трогаем
-              if (!pathInScope(it.file, m.spec.scope)) return false;
+              
+              // Проверяем scope + detect.allowlist_paths
+              const allowlistPaths = m.spec?.detect?.allowlist_paths || [];
+              if (!pathInScope(it.file, m.spec.scope, allowlistPaths)) return false;
+              
               const idx = indexesByFile.get(it.file); if (!idx) return false;
               const start = Number(it.start_line), end = Number(it.end_line);
+              
+              // Проверяем строки кода на соответствие detect паттернам
               for (let l = start; l <= end; l++) {
                 const line = idx.codeMap.get(l) || '';
                 if (m.match(line)) return true;
