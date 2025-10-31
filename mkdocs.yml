@@ -40,6 +40,11 @@ nav:
         - Работа со списками: rules/dart/DART-LIST-SAFE-ACCESS.md
       - Качество кода:
         - Запрещено поставлять закомментированный устаревший код: rules/dart/quality/DART-CLEAN-NO-CMT-LEGACY.md
+      - Производительность:
+        - Canvas batch-методы: rules/dart/performance/PERF-CANVAS-BATCH.md
+        - identical() для коллекций: rules/dart/performance/PERF-COLLECTIONS-IDENTICAL.md
+        - AnimatedBuilder вместо setState: rules/dart/performance/PERF-ANIMATION-NO-SETSTATE.md
+        - Минимальное использование GlobalKey: rules/dart/performance/PERF-GLOBALKEY-MINIMAL.md
   - Соответствия:
     - Маппинг линтера: mappings/linter_rules.md
   - Шаблоны:
