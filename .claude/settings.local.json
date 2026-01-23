@@ -5,7 +5,10 @@
       "Bash(python3:*)",
       "Bash(git show:*)",
       "Bash(git add:*)",
-      "Bash(git commit:*)"
+      "Bash(git commit:*)",
+      "Bash(git checkout:*)",
+      "Bash(git push:*)",
+      "Bash(gh pr create:*)"
     ],
     "deny": [],
     "ask": []
