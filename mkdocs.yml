@@ -45,6 +45,9 @@ nav:
         - identical() для коллекций: rules/dart/performance/PERF-COLLECTIONS-IDENTICAL.md
         - AnimatedBuilder вместо setState: rules/dart/performance/PERF-ANIMATION-NO-SETSTATE.md
         - Минимальное использование GlobalKey: rules/dart/performance/PERF-GLOBALKEY-MINIMAL.md
+      - Assets и ресурсы:
+        - Обязательные правила использования иконок и изображений: rules/dart/FL-UI-ICON-IMAGE-FORMAT.md
+        - Растровые иконки с версиями плотностей: rules/dart/FL-ASSETS-ICON-DENSITY.md
   - Соответствия:
     - Маппинг линтера: mappings/linter_rules.md
   - Шаблоны:

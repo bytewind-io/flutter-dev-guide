@@ -168,5 +168,42 @@
     "coverage": "ai",
     "bad_snippet": "docs/examples/bad/bad-hardcoded-text-001.dart",
     "good_snippet": "docs/examples/good/good-hardcoded-text-001.dart"
+  },
+  {
+    "id": "FL-ASSETS-ICON-DENSITY",
+    "title": "Для растровых иконок добавляй версии всех плотностей экрана",
+    "category": "flutter/assets",
+    "severity": "warning",
+    "tags": [
+      "assets",
+      "icons",
+      "images",
+      "density",
+      "resolution",
+      "ui"
+    ],
+    "linter_rule": null,
+    "coverage": "manual",
+    "bad_snippet": "docs/examples/bad/bad-icon-density-001.dart",
+    "good_snippet": "docs/examples/good/good-icon-density-001.dart"
+  },
+  {
+    "id": "FL-UI-ICON-IMAGE-FORMAT",
+    "title": "Обязательные правила использования иконок и изображений",
+    "category": "flutter/ui",
+    "severity": "error",
+    "tags": [
+      "icons",
+      "images",
+      "assets",
+      "format",
+      "webp",
+      "font-icons",
+      "svg"
+    ],
+    "linter_rule": null,
+    "coverage": "ai",
+    "bad_snippet": "docs/examples/bad/bad-icon-image-format-001.dart",
+    "good_snippet": "docs/examples/good/good-icon-image-format-001.dart"
   }
 ]
