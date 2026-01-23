@@ -1,8 +1,8 @@
 ---
 id: FL-UI-ICON-IMAGE-FORMAT
-title: "Обязательные правила использования иконок и изображений"
+title: "Рекомендации по использованию иконок и изображений"
 status: stable
-severity: error
+severity: warning
 category: flutter/ui
 tags:
   - icons
@@ -28,9 +28,9 @@ scope:
 
 detect:
   patterns:
-    - id: svg_as_icon
-      description: "Использование SVG в качестве иконки"
-      regex: "(?:Icon|IconButton|Image\\.asset)\\s*\\([^)]*\\.svg"
+    - id: svg_asset_as_icon
+      description: "Использование SVG файла (через .asset) в качестве иконки"
+      regex: "(?:Icon|IconButton)\\s*\\([^)]*SvgPicture\\.asset\\s*\\([^)]*\\.svg"
       flags: "gm"
 
     - id: png_image_usage
@@ -53,7 +53,8 @@ autofix:
   suggestion: >
     Для иконок используйте IconData из шрифтовых иконок (Icons.*, кастомные шрифты).
     Для изображений используйте формат WebP вместо PNG.
-    SVG запрещен для иконок, допустим только для изображений в особых случаях.
+    SVG для иконок не рекомендуется. Если необходимо - используйте SvgPicture.string()
+    со встроенным SVG кодом вместо SvgPicture.asset() с файлом.
 
 linter_rule:
   coverage: ai
@@ -184,16 +185,49 @@ tests:
 - **Обязательный формат**: WebP
 - Необходимо предоставить версии для всех плотностей экрана (см. [FL-ASSETS-ICON-DENSITY](FL-ASSETS-ICON-DENSITY.md))
 
-### SVG запрещен для иконок
+### SVG не рекомендуется для иконок
 
-**Запрещено**: Использование формата SVG в качестве иконок.
+**Не рекомендуется**: Использование формата SVG в качестве иконок.
 
-**Причины запрета**:
+**Причины**:
 - Медленная отрисовка (парсинг XML)
 - Большой размер файла по сравнению со шрифтами
 - Дополнительная зависимость (flutter_svg)
 - Повышенное использование памяти
 - Проблемы с производительностью при множественном использовании
+
+**Если SVG необходим** (анимированные иконки, сложная графика):
+- ✅ **Используйте** `SvgPicture.string()` со встроенным SVG кодом
+- ❌ **Избегайте** `SvgPicture.asset()` с файлом
+
+**Преимущества `SvgPicture.string()`**:
+- Меньше файлов в проекте
+- Быстрее загрузка (не нужно читать файл)
+- Явно показывает исключительный случай
+- Легче заметить в code review
+- Можно использовать константу
+
+```dart
+// ❌ Плохо: SVG файл для иконки
+IconButton(
+  icon: SvgPicture.asset('assets/icons/custom.svg'),
+  onPressed: () {},
+)
+
+// ✅ Допустимо: SVG строка для особых случаев
+class AppSvgIcons {
+  static const String customIcon = '''
+    <svg width="24" height="24" viewBox="0 0 24 24">
+      <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+    </svg>
+  ''';
+}
+
+IconButton(
+  icon: SvgPicture.string(AppSvgIcons.customIcon),
+  onPressed: () {},
+)
+```
 
 ## 2. Изображения
 
@@ -261,19 +295,21 @@ class BadExampleScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Bad Example'),
         actions: [
-          // ❌ SVG используется как иконка
+          // ❌ ОШИБКА 1: SVG используется как иконка
+          // ❌ ОШИБКА 2: Магическая строка вместо константы
           IconButton(
             icon: SvgPicture.asset(
-              'assets/icons/settings.svg',
+              'assets/icons/settings.svg', // Хардкод пути
               width: 24,
               height: 24,
             ),
             onPressed: () {},
           ),
-          // ❌ PNG иконка вместо шрифтовой
+          // ❌ ОШИБКА 1: PNG иконка вместо шрифтовой
+          // ❌ ОШИБКА 2: Магическая строка
           IconButton(
             icon: Image.asset(
-              'assets/icons/search.png',
+              'assets/icons/search.png', // Хардкод пути
               width: 24,
               height: 24,
             ),
@@ -283,11 +319,11 @@ class BadExampleScreen extends StatelessWidget {
       ),
       body: Column(
         children: [
-          // ❌ PNG для изображения (должен быть WebP)
-          Image.asset('assets/images/banner.png'),
+          // ❌ PNG для изображения (должен быть WebP) + магическая строка
+          Image.asset('assets/images/banner.png'), // Хардкод
 
-          // ❌ SVG для изображения без обоснования
-          SvgPicture.asset('assets/images/logo.svg'),
+          // ❌ SVG для изображения без обоснования + магическая строка
+          SvgPicture.asset('assets/images/logo.svg'), // Хардкод
 
           // ❌ Растровая иконка без версий для разных плотностей
           Row(
@@ -321,12 +357,34 @@ class BadExampleScreen extends StatelessWidget {
 2. PNG используется для изображений → большой размер
 3. Растровые иконки вместо шрифтовых → нет масштабируемости
 4. Нет версий для разных плотностей → размытие на Retina
+5. Магические строки с путями → риск опечаток, нет автодополнения, сложность рефакторинга
 
 ## Хорошо
 
 ```dart
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
+// ✅ Константы для путей к ассетам
+class AppImages {
+  AppImages._();
+
+  static const String banner = 'assets/images/banner.webp';
+  static const String logo = 'assets/images/logo.svg';
+}
+
+class AppIcons {
+  AppIcons._();
+
+  // Шрифтовые иконки
+  static const IconData settings = Icons.settings;
+  static const IconData search = Icons.search;
+  static const IconData home = Icons.home;
+  static const IconData person = Icons.person;
+
+  // Цветные растровые иконки
+  static const String coloredBadge = 'assets/icons/colored_badge.webp';
+}
 
 class GoodExampleScreen extends StatelessWidget {
   @override
@@ -335,44 +393,44 @@ class GoodExampleScreen extends StatelessWidget {
       appBar: AppBar(
         title: Text('Good Example'),
         actions: [
-          // ✅ Шрифтовая иконка из Material Icons
+          // ✅ Шрифтовая иконка через константу
           IconButton(
-            icon: Icon(Icons.settings),
+            icon: Icon(AppIcons.settings),
             onPressed: () {},
           ),
-          // ✅ Шрифтовая иконка из Material Icons
+          // ✅ Шрифтовая иконка через константу
           IconButton(
-            icon: Icon(Icons.search),
+            icon: Icon(AppIcons.search),
             onPressed: () {},
           ),
         ],
       ),
       body: Column(
         children: [
-          // ✅ WebP для изображения
-          Image.asset('assets/images/banner.webp'),
+          // ✅ WebP для изображения + константа
+          Image.asset(AppImages.banner),
 
-          // ✅ SVG для изображения с обоснованием
+          // ✅ SVG для изображения с обоснованием + константа
           // Используется SVG для динамического изменения цвета логотипа
           SvgPicture.asset(
-            'assets/images/logo.svg',
+            AppImages.logo,
             colorFilter: ColorFilter.mode(
               Theme.of(context).primaryColor,
               BlendMode.srcIn,
             ),
           ),
 
-          // ✅ Шрифтовые иконки
+          // ✅ Шрифтовые иконки через константы
           Row(
             children: [
-              Icon(Icons.home, size: 24),
-              Icon(Icons.person, size: 24),
+              Icon(AppIcons.home, size: 24),
+              Icon(AppIcons.person, size: 24),
             ],
           ),
 
-          // ✅ Цветная растровая иконка в WebP с версиями для разных плотностей
+          // ✅ Цветная растровая иконка в WebP + константа + версии 2x/3x
           Image.asset(
-            'assets/icons/colored_badge.webp',
+            AppIcons.coloredBadge,
             width: 32,
             height: 32,
           ),
@@ -409,6 +467,171 @@ class CustomIconExample extends StatelessWidget {
     );
   }
 }
+```
+
+## Организация путей к ассетам
+
+### Вынос путей в константы
+
+**Рекомендуется**: Выносить пути к ассетам в отдельные классы-константы для избежания опечаток и централизации управления ресурсами.
+
+**Преимущества**:
+- Отсутствие магических строк в коде
+- Защита от опечаток (compile-time проверка)
+- Единая точка изменения при рефакторинге
+- Автодополнение в IDE
+- Легко найти все использования ассета
+
+### Структура классов
+
+```dart
+// lib/core/constants/app_images.dart
+class AppImages {
+  AppImages._(); // Приватный конструктор
+
+  // Изображения
+  static const String banner = 'assets/images/banner.webp';
+  static const String logoBg = 'assets/images/logo_bg.webp';
+  static const String placeholder = 'assets/images/placeholder.webp';
+
+  // Цветные растровые иконки (требуют версии 2x/3x)
+  static const String premiumBadge = 'assets/icons/premium_badge.webp';
+  static const String coloredStar = 'assets/icons/colored_star.webp';
+}
+
+// lib/core/constants/app_icons.dart
+class AppIcons {
+  AppIcons._(); // Приватный конструктор
+
+  // Шрифтовые иконки (основной способ)
+  static const IconData home = Icons.home;
+  static const IconData profile = Icons.person;
+  static const IconData settings = Icons.settings;
+
+  // Кастомные шрифтовые иконки
+  static const IconData customStar = IconData(0xe900, fontFamily: 'CustomIcons');
+  static const IconData customHeart = IconData(0xe901, fontFamily: 'CustomIcons');
+}
+```
+
+### Использование
+
+```dart
+// ❌ ПЛОХО: Магические строки
+class BadExample extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Image.asset('assets/images/banner.webp'), // Опечатка не будет найдена
+        CircleAvatar(
+          backgroundImage: AssetImage('assets/images/profile_pic.webp'),
+        ),
+      ],
+    );
+  }
+}
+
+// ✅ ХОРОШО: Использование констант
+class GoodExample extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Image.asset(AppImages.banner), // Автодополнение, проверка на этапе компиляции
+        CircleAvatar(
+          backgroundImage: AssetImage(AppImages.placeholder),
+        ),
+        Icon(AppIcons.home), // Шрифтовая иконка через константу
+      ],
+    );
+  }
+}
+```
+
+### Группировка по категориям
+
+Для больших проектов рекомендуется группировать ассеты по категориям:
+
+```dart
+// lib/core/constants/app_assets.dart
+class AppAssets {
+  AppAssets._();
+
+  static const images = _Images();
+  static const icons = _Icons();
+  static const animations = _Animations();
+}
+
+class _Images {
+  const _Images();
+
+  // Баннеры
+  final String homeBanner = 'assets/images/banners/home.webp';
+  final String promoBanner = 'assets/images/banners/promo.webp';
+
+  // Аватары
+  final String defaultAvatar = 'assets/images/avatars/default.webp';
+  final String placeholder = 'assets/images/avatars/placeholder.webp';
+
+  // Иллюстрации (SVG с обоснованием)
+  final String emptyState = 'assets/images/illustrations/empty.svg';
+}
+
+class _Icons {
+  const _Icons();
+
+  // Шрифтовые иконки
+  final IconData home = Icons.home;
+  final IconData search = Icons.search;
+
+  // Цветные растровые иконки
+  final String premium = 'assets/icons/premium.webp';
+  final String verified = 'assets/icons/verified.webp';
+}
+
+class _Animations {
+  const _Animations();
+
+  final String loading = 'assets/animations/loading.json';
+  final String success = 'assets/animations/success.json';
+}
+
+// Использование
+Image.asset(AppAssets.images.homeBanner);
+Icon(AppAssets.icons.home);
+```
+
+### Генерация констант
+
+Для автоматической генерации классов с константами используйте:
+
+**flutter_gen** (рекомендуется):
+```yaml
+# pubspec.yaml
+dev_dependencies:
+  flutter_gen: ^5.0.0
+
+flutter_gen:
+  output: lib/gen/
+  line_length: 80
+
+  integrations:
+    flutter_svg: true
+
+flutter:
+  assets:
+    - assets/images/
+    - assets/icons/
+```
+
+```dart
+// Автоматически генерируется в lib/gen/assets.gen.dart
+import 'package:flutter_gen/gen_l10n/assets.gen.dart';
+
+// Использование
+Image.asset(Assets.images.banner.path);
+Icon(Assets.icons.home); // Для шрифтовых иконок
 ```
 
 ## Создание кастомного иконочного шрифта
@@ -499,8 +722,8 @@ jobs:
 | **Шрифт** | ✅ Рекомендуется | ❌ Не применимо | Очень малый | Отлично | ∞ | Только одноцветные |
 | **WebP** | ✅ Цветные только | ✅ Рекомендуется | Малый | Отлично | Фиксированный | Требует версии 2x/3x |
 | **PNG** | ⚠️ Не рекомендуется | ❌ Не рекомендуется | Большой | Отлично | Фиксированный | Устаревший |
-| **SVG** | ❌ Запрещено | ⚠️ Особые случаи | Средний | Отлично | ∞ | Медленная отрисовка |
-| **JPG** | ❌ Запрещено | ⚠️ Фото только | Малый | Хорошо | Фиксированный | Нет прозрачности |
+| **SVG** | ⚠️ Не рекомендуется* | ⚠️ Особые случаи | Средний | Отлично | ∞ | *Если нужно - .string() |
+| **JPG** | ❌ Не подходит | ⚠️ Фото только | Малый | Хорошо | Фиксированный | Нет прозрачности |
 
 ## Исключения и особые случаи
 
@@ -524,7 +747,60 @@ Widget colorfulIcon() {
 // assets/icons/3.0x/app_logo_color.webp (3x: 144x144)
 ```
 
-### 2. Динамическое изменение цвета изображения
+### 2. SVG для иконок (исключительные случаи)
+
+Если SVG необходим для иконки (анимированная иконка, сложная графика):
+
+```dart
+// ❌ ПЛОХО: SVG файл для иконки
+IconButton(
+  icon: SvgPicture.asset('assets/icons/animated.svg'),
+  onPressed: () {},
+)
+
+// ✅ ДОПУСТИМО: SVG строка для иконки
+// lib/core/constants/app_svg_icons.dart
+class AppSvgIcons {
+  AppSvgIcons._();
+
+  // SVG код хранится как константа
+  static const String animatedIcon = '''
+    <svg width="24" height="24" viewBox="0 0 24 24">
+      <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+      <circle cx="12" cy="12" r="3"/>
+    </svg>
+  ''';
+
+  static const String customShape = '''
+    <svg width="24" height="24" viewBox="0 0 24 24">
+      <polygon points="12,2 15,8 22,9 17,14 18,21 12,17 6,21 7,14 2,9 9,8"/>
+    </svg>
+  ''';
+}
+
+// Использование
+IconButton(
+  icon: SvgPicture.string(
+    AppSvgIcons.animatedIcon,
+    width: 24,
+    height: 24,
+    colorFilter: ColorFilter.mode(
+      Colors.blue,
+      BlendMode.srcIn,
+    ),
+  ),
+  onPressed: () {},
+)
+```
+
+**Преимущества SVG строки перед файлом**:
+- ✅ Меньше файлов в assets
+- ✅ Быстрее загрузка (без чтения файла)
+- ✅ Явно видно в коде, что это исключение
+- ✅ Легче заметить в code review
+- ✅ Централизованное хранение в константах
+
+### 3. Динамическое изменение цвета изображения
 
 Если требуется менять цвета элементов изображения динамически:
 
@@ -543,7 +819,7 @@ Widget dynamicColorImage() {
 }
 ```
 
-### 3. Фотографии высокого качества
+### 4. Фотографии высокого качества
 
 Для фотографического контента WebP может не подходить:
 
@@ -562,11 +838,15 @@ Widget highQualityPhoto() {
 - [ ] Все иконки используют шрифтовые IconData (Icons.*, кастомные шрифты)
 - [ ] Цветные иконки в формате WebP с версиями 1x/2x/3x
 - [ ] Изображения в формате WebP (или JPEG для фото)
-- [ ] SVG не используется для иконок
+- [ ] SVG для иконок используется только в исключительных случаях
+- [ ] SVG для иконок используется через SvgPicture.string(), а не .asset()
+- [ ] SVG строки вынесены в константы (AppSvgIcons)
 - [ ] SVG для изображений имеет комментарий с обоснованием
 - [ ] Нет PNG файлов для новых изображений
 - [ ] Кастомные иконочные шрифты подключены в pubspec.yaml
 - [ ] Все растровые иконки имеют версии для разных плотностей экрана
+- [ ] Пути к ассетам вынесены в классы-константы (AppImages, AppIcons)
+- [ ] Нет магических строк с путями к ассетам в коде виджетов
 
 ## Связанные правила
 

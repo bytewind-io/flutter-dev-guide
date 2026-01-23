@@ -73,22 +73,32 @@ class HomeScreen extends StatelessWidget {
 // 3. Оптимальное использование памяти (загружается только нужная версия)
 // 4. Профессиональный внешний вид приложения
 
-// АЛЬТЕРНАТИВА - Векторные иконки (SVG):
+// ЛУЧШАЯ АЛЬТЕРНАТИВА - Шрифтовые иконки:
 //
-// Для простых иконок лучше использовать SVG:
+// Для иконок ОБЯЗАТЕЛЬНО использовать шрифтовые иконки вместо растровых.
+// См. правило FL-UI-ICON-IMAGE-FORMAT для подробностей.
 //
-// assets/
-//   icons/
-//     home.svg             // ✅ Масштабируется без потери качества
-//     profile.svg          // ✅ Не требует версий 2x/3x
-//     settings.svg         // ✅ Меньший размер файла
+// Преимущества шрифтовых иконок:
+// - Масштабируются бесконечно без потери качества
+// - Не требуют версий 2x/3x
+// - Малый размер (один шрифтовой файл для всех иконок)
+// - Легко менять цвет через параметр color
+// - Быстрая отрисовка
 //
-// import 'package:flutter_svg/flutter_svg.dart';
+// import 'package:flutter/material.dart';
 //
 // Widget build(BuildContext context) {
-//   return SvgPicture.asset(
-//     'assets/icons/home.svg',
-//     width: 24,
-//     height: 24,
+//   return Icon(
+//     Icons.home,  // Material Icons
+//     size: 24,
+//     color: Colors.blue,
 //   );
 // }
+//
+// Для кастомных иконок создайте иконочный шрифт:
+// - Используйте FlutterIcon (fluttericon.com) или IcoMoon (icomoon.io)
+// - Конвертируйте SVG в TTF шрифт
+// - Подключите в pubspec.yaml
+//
+// ВАЖНО: SVG запрещен для иконок (см. FL-UI-ICON-IMAGE-FORMAT)
+// SVG допустим только для изображений в особых случаях.

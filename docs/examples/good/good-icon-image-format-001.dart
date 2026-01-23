@@ -1,7 +1,44 @@
 // ✅ ХОРОШО: Правильное использование форматов иконок и изображений
+// + вынос путей к ассетам в константы
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+
+// ✅ Класс с константами для путей к ассетам
+class AppImages {
+  AppImages._(); // Приватный конструктор
+
+  static const String banner = 'assets/images/banner.webp';
+  static const String themedIllustration = 'assets/images/themed_illustration.svg';
+  static const String photo = 'assets/images/photo.jpg';
+}
+
+class AppIcons {
+  AppIcons._();
+
+  // Шрифтовые иконки
+  static const IconData home = Icons.home;
+  static const IconData search = Icons.search;
+  static const IconData notifications = Icons.notifications;
+  static const IconData settings = Icons.settings;
+  static const IconData person = Icons.person;
+
+  // Цветные растровые иконки
+  static const String coloredStar = 'assets/icons/colored_star.webp';
+  static const String premiumBadge = 'assets/icons/premium_badge.webp';
+}
+
+// ✅ SVG иконки (только в исключительных случаях) - через string, не файл
+class AppSvgIcons {
+  AppSvgIcons._();
+
+  // Используется SVG для анимированной иконки
+  static const String animatedIcon = '''
+    <svg width="24" height="24" viewBox="0 0 24 24">
+      <path d="M12 2L2 7l10 5 10-5-10-5z"/>
+    </svg>
+  ''';
+}
 
 class GoodIconImageExample extends StatelessWidget {
   @override
@@ -10,21 +47,21 @@ class GoodIconImageExample extends StatelessWidget {
       appBar: AppBar(
         title: Text('Good Example'),
         actions: [
-          // ✅ Шрифтовая иконка из Material Icons
+          // ✅ Шрифтовая иконка через константу
           IconButton(
-            icon: Icon(Icons.settings),
+            icon: Icon(AppIcons.settings),
             onPressed: () {},
           ),
 
-          // ✅ Шрифтовая иконка из Material Icons
+          // ✅ Шрифтовая иконка через константу
           IconButton(
-            icon: Icon(Icons.search),
+            icon: Icon(AppIcons.search),
             onPressed: () {},
           ),
 
-          // ✅ Шрифтовая иконка из Material Icons
+          // ✅ Шрифтовая иконка через константу
           IconButton(
-            icon: Icon(Icons.notifications),
+            icon: Icon(AppIcons.notifications),
             onPressed: () {},
           ),
         ],
@@ -32,10 +69,10 @@ class GoodIconImageExample extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // ✅ WebP для изображения
+            // ✅ WebP для изображения + использование константы
             // Размер: ~60KB (вместо ~200KB PNG)
             Image.asset(
-              'assets/images/banner.webp',
+              AppImages.banner, // Константа вместо магической строки
               width: double.infinity,
               height: 200,
               fit: BoxFit.cover,
@@ -43,11 +80,11 @@ class GoodIconImageExample extends StatelessWidget {
 
             SizedBox(height: 16),
 
-            // ✅ SVG для изображения с обоснованием
-            // Используется SVG для динамического изменения цвета логотипа
+            // ✅ SVG для изображения с обоснованием + константа
+            // Используется SVG для динамического изменения цвета
             // в зависимости от темы приложения
             SvgPicture.asset(
-              'assets/images/logo.svg',
+              AppImages.themedIllustration, // Константа
               width: 120,
               height: 120,
               colorFilter: ColorFilter.mode(
@@ -58,23 +95,23 @@ class GoodIconImageExample extends StatelessWidget {
 
             SizedBox(height: 16),
 
-            // ✅ Шрифтовые иконки Material Icons
+            // ✅ Шрифтовые иконки через константы
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                Icon(Icons.home, size: 24),
-                Icon(Icons.person, size: 24),
-                Icon(Icons.settings, size: 24),
+                Icon(AppIcons.home, size: 24),
+                Icon(AppIcons.person, size: 24),
+                Icon(AppIcons.settings, size: 24),
               ],
             ),
 
             SizedBox(height: 16),
 
-            // ✅ Цветная иконка в WebP с версиями для разных плотностей
+            // ✅ Цветная иконка в WebP + константа + версии для разных плотностей
             Row(
               children: [
                 Image.asset(
-                  'assets/icons/colored_star.webp',
+                  AppIcons.coloredStar, // Константа вместо строки
                   width: 32,
                   height: 32,
                 ),
@@ -88,30 +125,43 @@ class GoodIconImageExample extends StatelessWidget {
 
             SizedBox(height: 16),
 
-            // ✅ Кастомная иконка из шрифтового набора
+            // ✅ Кастомная иконка из шрифтового набора через константу
             Icon(CustomIcons.customStar, size: 32, color: Colors.amber),
+
+            SizedBox(height: 16),
+
+            // ✅ SVG иконка (исключительный случай) - через .string(), не .asset()
+            SvgPicture.string(
+              AppSvgIcons.animatedIcon,
+              width: 24,
+              height: 24,
+              colorFilter: ColorFilter.mode(
+                Colors.purple,
+                BlendMode.srcIn,
+              ),
+            ),
           ],
         ),
       ),
       bottomNavigationBar: BottomNavigationBar(
-        // ✅ Шрифтовые иконки для навигации
+        // ✅ Шрифтовые иконки для навигации через константы
         items: [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
+            icon: Icon(AppIcons.home),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.search),
+            icon: Icon(AppIcons.search),
             label: 'Search',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.person),
+            icon: Icon(AppIcons.person),
             label: 'Profile',
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        // ✅ Шрифтовая иконка в FAB
+        // ✅ Шрифтовая иконка в FAB через константу
         child: Icon(Icons.add),
         onPressed: () {},
       ),
@@ -237,12 +287,12 @@ class DynamicSvgExample extends StatelessWidget {
   }
 }
 
-// ✅ Фотография в JPEG (допустимо для фото)
+// ✅ Фотография в JPEG (допустимо для фото) + константа
 class PhotoExample extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Image.asset(
-      'assets/images/photo.jpg',
+      AppImages.photo, // Константа
       fit: BoxFit.cover,
       width: double.infinity,
       height: 300,
@@ -261,6 +311,9 @@ class PhotoExample extends StatelessWidget {
 // 8. Простая поддержка темной темы
 // 9. Единообразный стиль иконок
 // 10. Быстрая загрузка приложения
+// 11. Константы вместо магических строк - нет опечаток
+// 12. Автодополнение и рефакторинг путей
+// 13. Единая точка управления ассетами
 
 // СОЗДАНИЕ КАСТОМНОГО ШРИФТА:
 // 1. Подготовьте SVG иконки

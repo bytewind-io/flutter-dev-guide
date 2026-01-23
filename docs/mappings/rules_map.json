@@ -189,9 +189,9 @@
   },
   {
     "id": "FL-UI-ICON-IMAGE-FORMAT",
-    "title": "Обязательные правила использования иконок и изображений",
+    "title": "Рекомендации по использованию иконок и изображений",
     "category": "flutter/ui",
-    "severity": "error",
+    "severity": "warning",
     "tags": [
       "icons",
       "images",
@@ -199,7 +199,8 @@
       "format",
       "webp",
       "font-icons",
-      "svg"
+      "svg",
+      "svg-string"
     ],
     "linter_rule": null,
     "coverage": "ai",

@@ -1,4 +1,5 @@
 // ❌ ПЛОХО: Неправильное использование форматов иконок и изображений
+// + использование магических строк вместо констант
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -10,11 +11,12 @@ class BadIconImageExample extends StatelessWidget {
       appBar: AppBar(
         title: Text('Bad Example'),
         actions: [
-          // ❌ ОШИБКА: SVG используется как иконка
-          // Проблема: медленная отрисовка, большой размер, зависимость от flutter_svg
+          // ❌ ОШИБКА 1: SVG файл (.asset) используется как иконка
+          // ❌ ОШИБКА 2: Если SVG нужен - используйте .string(), а не .asset()
+          // Проблема: медленная отрисовка, большой размер файла, зависимость
           IconButton(
             icon: SvgPicture.asset(
-              'assets/icons/settings.svg',
+              'assets/icons/settings.svg', // Плохо - файл
               width: 24,
               height: 24,
             ),
@@ -47,10 +49,11 @@ class BadIconImageExample extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // ❌ ОШИБКА: PNG для изображения (должен быть WebP)
-            // Проблема: большой размер файла (~200KB вместо ~60KB)
+            // ❌ ОШИБКА 1: PNG для изображения (должен быть WebP)
+            // ❌ ОШИБКА 2: Магическая строка вместо константы
+            // Проблема: большой размер файла (~200KB вместо ~60KB) + риск опечатки
             Image.asset(
-              'assets/images/banner.png',
+              'assets/images/banner.png', // Хардкод пути
               width: double.infinity,
               height: 200,
               fit: BoxFit.cover,
@@ -59,7 +62,7 @@ class BadIconImageExample extends StatelessWidget {
             SizedBox(height: 16),
 
             // ❌ ОШИБКА: SVG для изображения без обоснования
-            // Проблема: медленная отрисовка, зависимость
+            // Если SVG нужен для динамического изменения цвета - добавьте комментарий
             SvgPicture.asset(
               'assets/images/logo.svg',
               width: 120,
@@ -159,3 +162,5 @@ class BadListTileExample extends StatelessWidget {
 // 6. Повышенное использование памяти
 // 7. Плохая производительность при множественном использовании
 // 8. Сложность поддержки темной темы
+// 9. Магические строки - риск опечаток, нет автодополнения
+// 10. Сложность рефакторинга путей к ассетам
