@@ -52,25 +52,30 @@ detect:
       description: "Хардкод текста в Text виджетах"
       regex: "Text\\s*\\(\\s*['\"][^'\"]*[А-Яа-яЁё\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\u0600-\u06ff\u0590-\u05ff\u0100-\u017f\u1e00-\u1eff\u0370-\u03ff\u0400-\u04ff][^'\"]*['\"]"
       flags: "gm"
-    
+
     - id: hardcoded_text_label
       description: "Хардкод текста в label параметрах"
       regex: "label\\s*:\\s*['\"][^'\"]*[А-Яа-яЁё\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\u0600-\u06ff\u0590-\u05ff\u0100-\u017f\u1e00-\u1eff\u0370-\u03ff\u0400-\u04ff][^'\"]*['\"]"
       flags: "gm"
-    
+
     - id: hardcoded_text_title
       description: "Хардкод текста в title параметрах"
       regex: "title\\s*:\\s*['\"][^'\"]*[А-Яа-яЁё\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\u0600-\u06ff\u0590-\u05ff\u0100-\u017f\u1e00-\u1eff\u0370-\u03ff\u0400-\u04ff][^'\"]*['\"]"
       flags: "gm"
-    
+
     - id: hardcoded_text_hinttext
       description: "Хардкод текста в hintText параметрах"
       regex: "hintText\\s*:\\s*['\"][^'\"]*[А-Яа-яЁё\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\u0600-\u06ff\u0590-\u05ff\u0100-\u017f\u1e00-\u1eff\u0370-\u03ff\u0400-\u04ff][^'\"]*['\"]"
       flags: "gm"
-    
+
     - id: hardcoded_text_tooltip
       description: "Хардкод текста в tooltip параметрах"
       regex: "tooltip\\s*:\\s*['\"][^'\"]*[А-Яа-яЁё\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\u0600-\u06ff\u0590-\u05ff\u0100-\u017f\u1e00-\u1eff\u0370-\u03ff\u0400-\u04ff][^'\"]*['\"]"
+      flags: "gm"
+
+    - id: hardcoded_text_param
+      description: "Хардкод текста в text параметрах"
+      regex: "text\\s*:\\s*['\"][^'\"]*[А-Яа-яЁё\u4e00-\u9fff\u3040-\u309f\u30a0-\u30ff\u0600-\u06ff\u0590-\u05ff\u0100-\u017f\u1e00-\u1eff\u0370-\u03ff\u0400-\u04ff][^'\"]*['\"]"
       flags: "gm"
 
   # Исключения - разрешённые случаи
@@ -114,8 +119,8 @@ linter_rule:
 
 ai_hint: >
   1) Проверяй только файлы в UI/presentation/widget слоях (include_paths), НЕ флагируй data/api/config.
-  2) Нарушение: строковые литералы с не-ASCII символами (кириллица, китайские, арабские и др.) 
-     в параметрах Text(), label:, title:, hintText:, tooltip: и подобных UI-элементах.
+  2) Нарушение: строковые литералы с не-ASCII символами (кириллица, китайские, арабские и др.)
+     в параметрах Text(), text:, label:, title:, hintText:, tooltip: и подобных UI-элементах.
   3) НЕ флагируй: интерполированные строки (${}), логирование, константы, asset пути, URLs.
   4) НЕ флагируй: технические строки с подчёркиваниями, ключи API, ID.
   5) НЕ флагируй: строки только из ASCII символов (английский текст пока допустим).
